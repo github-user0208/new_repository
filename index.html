@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>불이야! 디지털 트윈 실험실 — 2025 의성 산불 일주일</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#EDEFE6;--panel:#F7F8F2;--ink:#1F2B1D;--muted:#5F6B5A;--line:#C9CEBF;--moss:#3F7D3A;--ember:#E4531B;--water:#3F7FB5;--sel:#FBE3D6;
+ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#141913;--panel:#1C221A;--ink:#E3E9DA;--muted:#9AA592;--line:#34402F;--moss:#7DBA6F;--ember:#FF7443;--water:#6FA6DA;--sel:#3A2419;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#141913;--panel:#1C221A;--ink:#E3E9DA;--muted:#9AA592;--line:#34402F;--moss:#7DBA6F;--ember:#FF7443;--water:#6FA6DA;--sel:#3A2419;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.6 "IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-variant-numeric:tabular-nums}
+header{padding:22px clamp(14px,3vw,36px) 10px;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:end;justify-content:space-between;border-bottom:2px solid var(--ink)}
+h1{margin:0;font-size:clamp(22px,3.2vw,34px);line-height:1.15;font-weight:700;letter-spacing:-.02em}
+h1 span{display:block;font-size:.5em;font-weight:500;color:var(--muted);letter-spacing:0;margin-top:6px}
+header p{margin:0;max-width:52ch;color:var(--muted);font-size:14px}
+main{display:grid;grid-template-columns:minmax(300px,640px) minmax(0,1fr);gap:24px;padding:18px clamp(14px,3vw,36px) 48px;align-items:start}
+@media (max-width:980px){main{grid-template-columns:1fr}}
+main>section{min-width:0}
+#timeline .tl{min-width:0}
+.stage{position:sticky;top:calc(env(safe-area-inset-top,0px) + 10px)}
+@media (max-width:980px){.stage{position:static}}
+.mapwrap{position:relative;line-height:0}
+#map{display:block;border:2px solid var(--ink);touch-action:none;cursor:crosshair;background:#fff}
+#map[data-tool="RES"],#map[data-tool="IGN"]{cursor:pointer}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+button{font:inherit;font-weight:600;border:2px solid var(--ink);background:var(--ink);color:var(--paper);padding:6px 14px;border-radius:6px;cursor:pointer}
+button.ghost{background:transparent;color:var(--ink)}
+button.fire{background:var(--ember);border-color:var(--ember);color:#fff}
+button:disabled{opacity:.45;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--ember);outline-offset:2px}
+input,select{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:3px 6px}
+input[type=number]{width:5.2em}
+#dryBox input[type=number]{width:6.5em}
+input[type=range]{width:100%;accent-color:var(--ember);padding:0;border:0;background:none}
+#turnInfo{font-size:13.5px;min-height:3.2em;margin:8px 0 4px}
+#turnInfo em{color:var(--ember);font-style:normal;font-weight:600}
+.stale{background:var(--sel);border-left:4px solid var(--ember);padding:6px 10px;font-size:13.5px;margin:8px 0}
+/* 시간 변화 띠 */
+#timeline{display:grid;grid-template-columns:repeat(28,1fr);gap:1px;margin-top:6px}
+.tl{position:relative;height:40px;border:0;border-radius:0;padding:0;color:var(--ink);background:var(--panel);font-weight:700;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.tl.day{box-shadow:inset 2px 0 0 var(--ink)}
+.tl.hum-건조{background:#F3C9A6}.tl.hum-보통{background:#E6E3C8}.tl.hum-습윤{background:#B9D5EA}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tl.hum-건조{background:#5A3A25}:root:not([data-theme="light"]) .tl.hum-보통{background:#3A3A2C}:root:not([data-theme="light"]) .tl.hum-습윤{background:#23405A}}
+:root[data-theme="dark"] .tl.hum-건조{background:#5A3A25}:root[data-theme="dark"] .tl.hum-보통{background:#3A3A2C}:root[data-theme="dark"] .tl.hum-습윤{background:#23405A}
+.tl i{font-style:normal;display:inline-block;line-height:1}
+.tl i.w-약{font-size:11px;opacity:.6}.tl i.w-중{font-size:15px}.tl i.w-강{font-size:21px;color:var(--ember)}
+.tl s{position:absolute;top:0;right:1px;font-size:10px;text-decoration:none}
+.tl u{position:absolute;bottom:0;left:0;right:0;font-size:8.5px;text-decoration:none;color:var(--ember);line-height:1.2}
+.tl.cur{outline:3px solid var(--ember);outline-offset:-3px;z-index:1}
+#tlDates{display:grid;grid-template-columns:repeat(7,1fr);font-size:12px;color:var(--muted);margin-top:3px}
+#tlDates span{border-left:2px solid var(--ink);padding-left:4px;line-height:1.3}
+#tlDates small{display:block;color:var(--ember);font-size:11px}
+.keys{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted);margin-top:10px}
+.keys i{display:inline-block;width:11px;height:11px;margin-right:4px;vertical-align:-1px;border:1px solid rgba(0,0,0,.15)}
+/* 작업 영역 */
+.tabs{display:flex;flex-wrap:wrap;gap:0;border-bottom:2px solid var(--ink)}
+.tab{background:transparent;color:var(--muted);border:0;border-radius:0;padding:9px 12px;font-weight:600;border-bottom:4px solid transparent;margin-bottom:-2px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ember)}
+.tab b{display:inline-block;width:1.45em;height:1.45em;line-height:1.45em;text-align:center;border-radius:50%;background:var(--line);color:var(--ink);font-size:12px;margin-right:4px}
+.tab[aria-selected="true"] b{background:var(--ember);color:#fff}
+.panel{padding:16px 0}
+.panel h2{font-size:20px;margin:0 0 4px;letter-spacing:-.01em}
+.panel h3{font-size:15.5px;margin:22px 0 6px}
+.lead{color:var(--muted);margin:0 0 12px;max-width:70ch}
+.scroll{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;font-size:13px;width:100%}
+th,td{border-bottom:1px solid var(--line);padding:5px 7px;text-align:left;white-space:nowrap}
+thead th{background:var(--panel);font-weight:600;position:sticky;top:0}
+td.note{color:var(--ember);font-weight:600}
+caption{caption-side:top;text-align:left;color:var(--muted);padding:8px 0}
+#log tbody tr{cursor:pointer}
+tr.cur td,tr.cur th{background:var(--sel)}
+.logbox{max-height:340px;overflow:auto;border:1px solid var(--line)}
+.g-강{color:var(--ember);font-weight:700}.h-건조{color:#B8561A;font-weight:600}.h-습윤{color:var(--water);font-weight:600}
+fieldset{border:1px solid var(--line);border-radius:6px;padding:8px 12px 10px;margin:0 0 12px;background:var(--panel)}
+legend{font-weight:600;padding:0 4px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:4px 18px}
+.sl label{display:flex;justify-content:space-between;font-size:13.5px}
+.sl output{font-weight:700;color:var(--ember)}
+.sl small{display:block;color:var(--muted);font-size:12px;line-height:1.35;margin-top:-2px}
+.chk{display:block;font-size:14px;margin:4px 0}
+.formula{font-size:14px;background:var(--panel);border-left:4px solid var(--moss);padding:8px 12px;margin:0 0 14px}
+.tools{display:flex;flex-wrap:wrap;gap:6px}
+.tool{background:transparent;color:var(--ink);font-weight:500}
+.tool[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.res{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:6px;margin:6px 0;font-size:13.5px;background:var(--panel)}
+.res.sel{border-color:var(--ember);box-shadow:inset 3px 0 0 var(--ember)}
+.res .nm{width:7em;font-weight:600}.res .pos{color:var(--muted)}
+.res .del{padding:2px 8px;font-size:12px;margin-left:auto}
+.budget{font-size:14px;margin:8px 0}.budget b{font-size:18px}.budget.over b{color:var(--ember)}
+.muted{color:var(--muted)}
+canvas.chart{width:100%;display:block;border:1px solid var(--line);background:var(--panel)}
+#scenList{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+#scenList li{border:1px solid var(--line);border-radius:6px;padding:8px 10px;background:var(--panel);font-size:13.5px}
+#scenList small{color:var(--muted)}
+.cost{float:right;font-weight:700}.cost.over,tr.over td{color:var(--ember)}
+.qs{padding-left:1.2em;max-width:70ch}.qs li{margin:4px 0}
+blockquote{margin:10px 0;padding:8px 12px;border-left:4px solid var(--ember);background:var(--panel);font-size:14px;max-width:72ch}
+
+.viewbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px;font-size:13px}
+.view,.tool.look{background:transparent;color:var(--ink);font-weight:500;padding:4px 10px;font-size:13px}
+.view[aria-pressed="true"],.tool.look[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.tool.look{margin-left:auto;border-color:var(--ember)}
+.tool.look[aria-pressed="true"]{background:var(--ember);border-color:var(--ember);color:#fff}
+.vlegend{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--muted);min-height:6px;margin-top:6px}
+.ramp{display:inline-block;width:120px;height:10px;border:1px solid var(--line)}
+.ramp.fuel{background:linear-gradient(90deg,rgb(255,244,196),rgb(247,196,96),rgb(226,112,40),rgb(158,30,24))}
+.ramp.hgt{background:linear-gradient(90deg,rgb(214,226,186),rgb(160,170,110),rgb(140,110,70),rgb(235,232,225))}
+.inspect{font-size:13.5px;margin:8px 0;padding:8px 10px;border:1px dashed var(--line);border-radius:6px;background:var(--panel)}
+.prod{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:6px 0;font-size:12.5px}
+.prod span{display:inline-flex;flex-direction:column;align-items:center;padding:2px 6px;border:1px solid var(--line);border-radius:4px;background:var(--paper);line-height:1.25}
+.prod span b{font-size:14px}
+.prod span.veg{border-color:var(--moss);box-shadow:inset 0 -3px 0 var(--moss)}
+.prod span.res{border-color:var(--ember);color:var(--ember)}
+.dryband{display:flex;gap:8px;align-items:center;margin-top:6px;font-size:12.5px}
+.dryband .dlabel{color:var(--muted);white-space:nowrap}
+.dbar{flex:1;padding:3px 8px;border-radius:3px;font-weight:600;box-shadow:inset 3px 0 0 var(--moss)}
+.dbar.d-건조{background:#F3C9A6}.dbar.d-보통{background:#E6E3C8}.dbar.d-습윤{background:#B9D5EA}
+.dbar{color:#1F2B1D}
+.g-건조{color:#B8561A}.g-습윤{color:var(--water)}
+.drygrade{font-size:14.5px;margin:6px 0 10px}
+i.sw{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px;border:1px solid rgba(0,0,0,.2)}
+td.hint{white-space:normal;min-width:240px;color:var(--muted);font-size:12.5px;line-height:1.45}
+#vegTable td .sl label{font-size:12px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:8px;opacity:0;transition:.25s;pointer-events:none;max-width:90vw;font-size:14px;z-index:10}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>불이야! 디지털 트윈 실험실<span>2025년 3월 의성 산불 일주일을 격자 위에 다시 일으켜 보기</span></h1>
+  <p>실측 기상을 28턴(1턴 = 6시간)으로 바꾸고, 지도·방어·확산 규칙을 우리 모둠의 설정으로 고친 뒤, 실제 산불과 비교해 모형을 다듬습니다. 설정은 이 브라우저에 자동 저장돼요.</p>
+</header>
+<main>
+<section class="stage" aria-label="시뮬레이션 화면">
+  <div class="viewbar" role="group" aria-label="지도 보기">
+    <span class="muted">지도 보기</span>
+    <button class="view" data-view="terrain">지형·식생</button><button class="view" data-view="fuel">연료 계수</button><button class="view" data-view="height">고도</button>
+    <button class="tool look" data-tool="LOOK">칸 살펴보기</button>
+  </div>
+  <div class="mapwrap"><canvas id="map" aria-label="의성~영덕 단순화 격자 지도. 편집 도구로 클릭해 바꿀 수 있음"></canvas></div>
+  <div id="viewLegend" class="vlegend"></div>
+  <div id="inspect" class="inspect" aria-live="polite"></div>
+  <div id="stale" class="stale" hidden>설정이 바뀌었어요. <b>시뮬레이션 실행</b>을 다시 눌러야 결과에 반영됩니다.</div>
+  <div class="bar">
+    <button id="runBtn" class="fire">시뮬레이션 실행</button>
+    <button id="prevBtn" class="ghost" aria-label="이전 턴">◀</button>
+    <button id="playBtn" class="ghost">재생</button>
+    <button id="nextBtn" class="ghost" aria-label="다음 턴">▶</button>
+    <label class="muted" style="font-size:13px">속도 <select id="speed"><option value="600">느리게</option><option value="300" selected>보통</option><option value="120">빠르게</option></select></label>
+  </div>
+  <label class="muted" style="display:flex;gap:8px;align-items:center;font-size:13px;white-space:nowrap"><output id="scrubOut" style="min-width:3.5em">턴 0</output><input id="scrub" type="range" min="0" max="27" value="0" aria-label="턴 이동"></label>
+  <div id="turnInfo" aria-live="polite"></div>
+  <div id="timeline" aria-label="시간 변화 변수 띠: 화살표는 불이 번지는 방향과 풍속, 배경색은 습도 등급"></div>
+  <div id="tlDates"></div>
+  <div id="dryBand" class="dryband"></div>
+  <div class="keys">
+    <span><i style="background:#EBDC9C"></i>농경지</span><span><i style="background:#A9D08A"></i>활엽수림</span><span><i style="background:#3F7D3A"></i>침엽수림</span><span><i style="background:#D2E46A"></i>수종전환</span>
+    <span><i style="background:#4F8CC4"></i>하천</span><span><i style="background:#A3A59C"></i>도로</span><span><i style="background:#B07CC6"></i>마을</span><span><i style="background:#8A5526"></i>방화선</span>
+    <span><i style="background:#F0521C"></i>연소 중</span><span><i style="background:#2A2826"></i>소실</span><span><i style="background:#1FB6D9"></i>진화</span>
+    <span>띠 배경: <i style="background:#F3C9A6"></i>건조 <i style="background:#E6E3C8"></i>보통 <i style="background:#B9D5EA"></i>습윤 · ☂ 강수 · ✕H 헬기 중단</span>
+  </div>
+</section>
+
+<section aria-label="설정과 기록">
+  <nav class="tabs" role="tablist">
+    <button class="tab" data-tab="p1" aria-selected="true"><b>1</b>시간 변화 변수</button>
+    <button class="tab" data-tab="pv" aria-selected="false"><b>2</b>식생 조건</button>
+    <button class="tab" data-tab="p2" aria-selected="false"><b>3</b>지도·방어</button>
+    <button class="tab" data-tab="p3" aria-selected="false"><b>4</b>전이 규칙</button>
+    <button class="tab" data-tab="p4" aria-selected="false"><b>5</b>실행·기록</button>
+    <button class="tab" data-tab="p5" aria-selected="false"><b>6</b>점검·보완</button>
+    <button class="tab" data-tab="p6" aria-selected="false"><b>7</b>정책 비교</button>
+  </nav>
+
+  <div class="panel" id="p1">
+    <h2>기상 조건: 실측 기상을 턴 스케줄로 바꾸기</h2>
+    <p class="lead">경북 일별 기상(1~2차시 데이터)입니다. 기상 파일에 없는 <b>주풍향</b>은 1차시 API로 확인한 값을 입력하세요(기본값은 예시). 풍향은 바람이 <b>불어오는</b> 방향이라 270°(서풍)면 불은 동쪽으로 번집니다.</p>
+    <div class="scroll"><table id="days"><thead><tr><th>날짜</th><th>최대풍속 km/h</th><th>최대돌풍</th><th>최저습도 %</th><th>강수 mm</th><th>연속무강수일</th><th>주풍향 °</th><th>실제 산불</th></tr></thead><tbody></tbody></table></div>
+    <h3>등급 변환 기준</h3>
+    <p class="lead">경계값을 어디에 둘지는 모둠이 정합니다. 1~2차시 분석 결과를 근거로 삼으세요. 하루 값은 그날 4턴에 똑같이 쓰이고(시간의 함수), 풍향만 턴마다 확률적으로 45° 흔들립니다(확률적 갱신).</p>
+    <div id="thresholds" class="grid2"></div>
+    <h3>변환 결과</h3>
+    <div class="scroll"><table id="sched"><thead><tr><th>날짜</th><th>턴별 풍향 (00·06·12·18시)</th><th>풍속</th><th>습도</th><th>위험등급</th><th>강수 사건</th></tr></thead><tbody></tbody></table></div>
+    <div class="bar"><button class="ghost" id="dlSched">산출물② 시간 변화 변수표 저장 (CSV)</button></div>
+  </div>
+
+  <div class="panel" id="pv" hidden>
+    <h2>식생 조건: 무엇이, 얼마나 마른 채로 타는가</h2>
+    <p class="lead">산불의 확산은 <b>기상·연료·지형</b> 세 조건이 함께 정합니다(산불 행동 삼각형). 1번 탭이 기상이라면, 여기는 <b>연료(식생)와 지형</b>입니다. 지도 위 <b>연료 계수</b> 보기와 <b>칸 살펴보기</b>로 바뀐 값이 어디에 어떻게 반영되는지 확인하세요.</p>
+    <h3>① 식생 유형 — 어디에 무엇이 자라는가 (공간 변수)</h3>
+    <p class="lead">3차시 식생 이론을 근거로 유형별 연료 계수를 정합니다. 칸마다 다르고, 일주일 동안 변하지 않습니다.</p>
+    <div class="scroll"><table id="vegTable"><thead><tr><th>식생 유형</th><th>지도 칸 수</th><th>연료 등급</th><th>연료 계수</th><th>3차시 근거 (생각해 볼 점)</th></tr></thead><tbody></tbody></table></div>
+    <blockquote>토의: 3월의 활엽수림은 잎이 없어 “덜 탄다”고 할 수 있을까, 아니면 바닥의 마른 낙엽 때문에 “더 잘 번진다”고 봐야 할까? 우리 모둠의 활엽수 계수는 어느 쪽 입장인가?</blockquote>
+    <h3>② 연료 건조도 — 지금 얼마나 말라 있는가 (지역·느린 시간 변수)</h3>
+    <p class="lead">위성 식생지수를 <b>평년 같은 시기</b>와 비교해 등급을 정합니다. 16일마다 한 번 갱신되는 값이라, 6시간마다 바뀌는 기상과 달리 이 일주일 내내 같은 값입니다.</p>
+    <div id="dryBox"></div>
+    <div class="scroll"><table><caption>경북 NDVI (1~2차시 데이터, 16일 합성)</caption><thead><tr><th>합성 시작일</th><th>2022</th><th>2023</th><th>2024</th><th>2025</th></tr></thead><tbody>
+      <tr><th>3월 초 (3/5~3/6)</th><td>0.235</td><td>0.253</td><td>0.159</td><td><b>0.187</b></td></tr>
+      <tr><th>3월 말 (3/21~3/22)</th><td>0.241</td><td>0.256</td><td>0.178</td><td>0.243</td></tr>
+      <tr><th>4월 초 (4/6~4/7)</th><td>0.320</td><td>0.285</td><td>0.281</td><td><b>0.199</b></td></tr></tbody></table></div>
+    <ul class="qs">
+      <li>합성값은 시작일부터 16일 동안의 대표값이에요. 3/22 합성은 산불 기간이 섞여 있으므로, <b>산불 직전 상태는 3/6 합성</b>으로 봅니다(기본값).</li>
+      <li>2025년 4월 초 NDVI는 다른 해보다 뚜렷이 낮아요. 왜일까? (힌트: 위성으로 보는 산불 피해)</li>
+      <li>NDVI는 “얼마나 푸른가”, NDMI는 “얼마나 물기가 있나”를 봐요. 연료 건조도에는 어느 지수가 더 알맞을까? 1차시 보강에서 모은 NDMI로 바꿔 보세요.</li>
+    </ul>
+    <h3>③ 지형 경사 — 오르막일수록 빨라진다 (선택)</h3>
+    <p class="lead">불은 위쪽 연료를 미리 데우기 때문에 오르막으로 빨리 번집니다. 지도의 고도는 “서쪽 구릉 → 하천 계곡 → 청송·영양 산지 → 영덕 해안”을 흉내 낸 <b>가상 고도</b>예요(실측 아님). <b>고도</b> 보기로 확인하세요.</p>
+    <div id="slopeBox"></div>
+  </div>
+
+  <div class="panel" id="p2" hidden>
+    <h2>지도와 방어 요소</h2>
+    <p class="lead">도구를 고른 뒤 왼쪽 지도를 클릭하거나 드래그하세요. 1칸은 약 2km, 서쪽 끝에서 동쪽 끝까지 약 80km입니다.</p>
+    <div class="tools" role="group" aria-label="편집 도구">
+      <button class="tool" data-tool="X">방화선 긋기</button>
+      <button class="tool" data-tool="b">침엽→활엽 수종전환</button>
+      <button class="tool" data-tool="ERASE">원래 지형으로</button>
+      <button class="tool" data-tool="IGN">발화점 옮기기</button>
+      <button class="tool" data-tool="RES">진화 자원 옮기기</button>
+    </div>
+    <p class="budget">방화선 <span id="cntX">0</span>칸 · 수종전환 <span id="cntB">0</span>칸 · 대책 비용 <b id="costNow">0</b>점 <span class="muted">(정책 비교 예산 40점)</span></p>
+    <div class="grid2">
+      <label>발화 턴 <input id="ignTurn" type="number" min="0" max="27"> <span class="muted">(1 = 3/22 06~12시)</span></label>
+      <label>방화선 완성 턴 <input id="fbTurn" type="number" min="0" max="99"> <span class="muted">(완성 전엔 효과 없음)</span></label>
+    </div>
+    <h3>진화 자원 (최대 3개)</h3>
+    <p class="lead">헬기는 넓고 강하지만 <b>강풍 턴에는 뜨지 못합니다</b>. 지상진화대는 좁지만 바람과 상관없이 활동해요. 자원을 선택하고 지도를 클릭하면 그 위치로 옮겨집니다.</p>
+    <div id="resList"></div>
+    <div class="bar"><button class="ghost" id="addRes">자원 추가</button><button class="ghost" id="resetMap">지도만 처음으로</button></div>
+  </div>
+
+  <div class="panel" id="p3" hidden>
+    <h2>6차시 확률표를 전이 규칙으로</h2>
+    <p class="formula">한 칸의 불이 이웃 칸(8방향)으로 번질 확률 =<br><b>변환배율 × 기본확률(위험등급) × 바람 × 습도</b> <span class="muted">← 기상</span><br><b>× 식생 유형 × 연료 건조도 × 경사</b> <span class="muted">← 식생·지형 (2번 탭)</span><br><b>× 강수</b> <span class="muted">← 사건</span><br><span class="muted">식생이 아닌 칸: 도로 0.3 · 방화선 0.1 · 마을 1.0 · 하천 0 · 풍속이 강할수록 한 턴에 여러 단계(약 1 · 중 2 · 강 3) 번짐</span></p>
+    <p class="lead">처음에는 기본값으로 실행하고, 6번 탭에서 결과를 본 뒤 <b>한 번에 하나씩만</b> 바꾸세요.</p>
+    <div id="params"></div>
+    <div class="bar"><button class="ghost" id="dlSet">산출물① 디지털 트윈 설정표 저장 (CSV)</button></div>
+  </div>
+
+  <div class="panel" id="p4" hidden>
+    <h2>실행하고 기록하기</h2>
+    <p class="lead"><b>seed</b>는 주사위 순서예요. 같은 seed면 같은 결과가 나오니, 모둠끼리 비교할 땐 seed를 맞추세요. 표의 행을 누르면 그 턴으로 이동합니다.</p>
+    <div class="bar"><label>seed <input id="runSeed" type="number"></label><label>실행 번호 <input id="runNo" type="number" min="1"></label><button id="runBtn2" class="fire">시뮬레이션 실행</button></div>
+    <canvas id="chart" class="chart" height="180" aria-label="턴별 연소·소실·진화 칸 수 그래프"></canvas>
+    <h3>산출물③ 실행 로그</h3>
+    <div class="logbox"><table id="log"></table></div>
+    <div class="bar"><button class="ghost" id="dlLog">실행 로그 저장 (CSV)</button></div>
+    <h3>실행 비교 기록</h3>
+    <div class="scroll"><table id="hist"></table></div>
+    <div class="bar"><button class="ghost" id="dlHist">비교 기록 저장 (CSV)</button><button class="ghost" id="clrHist">기록 지우기</button></div>
+  </div>
+
+  <div class="panel" id="p5" hidden>
+    <h2>실제 의성 산불과 비교하기</h2>
+    <p class="lead">“너무 빠르다 / 느리다”를 감이 아니라 실제 결과로 판단합니다.</p>
+    <div class="scroll"><table id="check"></table></div>
+    <h3>식생 유형별로 얼마나 탔나</h3>
+    <p class="lead">식생 조건이 결과에 정말 영향을 주었는지 확인합니다. 어떤 유형이 “자기 비율보다 더 많이” 탔나요?</p>
+    <div class="scroll"><table id="vegCheck"></table></div>
+    <h3>증상별 점검 안내</h3>
+    <div class="scroll"><table><thead><tr><th>증상</th><th>의심되는 규칙</th><th>조정해 볼 값 (3번 탭)</th></tr></thead><tbody>
+      <tr><td>불이 하천에서 멈춰 동쪽으로 못 간다</td><td>불똥이 하천을 건너는 현상이 없다</td><td>비화 켜기</td></tr>
+      <tr><td>지도 대부분이 탄다</td><td>확률이 크거나 옆으로도 잘 번진다</td><td>변환배율↓ · 바람 집중도↑ · 비화 확률↓</td></tr>
+      <tr><td>동해안 도달이 너무 늦다</td><td>강풍의 영향이 약하다</td><td>바람가중치 강↑</td></tr>
+      <tr><td>3/28 비가 와도 안 꺼진다</td><td>강수 효과가 약하다</td><td>강수 보정↓ · 강수 소화확률↑</td></tr>
+      <tr><td>발화 직후 금방 꺼진다</td><td>초기 확률이 낮거나 운이 나빴다</td><td>seed를 바꿔 재확인 · 변환배율↑</td></tr>
+      <tr><td>침엽수림과 활엽수림의 피해 비율 차이가 없다</td><td>식생 유형 계수 차이가 작다</td><td>2번 탭 식생 유형 계수</td></tr>
+      <tr><td>건조한 날 확률이 지나치게 크다</td><td><b>같은 원인을 두 번 곱했을 수 있다</b> — 위험등급(무강수일)과 연료 건조도는 모두 “비가 안 와서 말랐다”를 담고 있다</td><td>연료 건조도 계수 또는 위험등급 확률 중 하나를 줄이기</td></tr>
+    </tbody></table></div>
+    <h3>한 번의 결과를 믿어도 될까? 반복 실행</h3>
+    <p class="lead">같은 설정으로 seed만 바꿔 여러 번 실행해 결과의 분포를 봅니다.</p>
+    <div class="bar"><label>횟수 <select id="repN"><option>20</option><option>50</option></select></label><button id="repBtn">반복 실행</button></div>
+    <p id="repSum" class="muted"></p>
+    <canvas id="histo" class="chart" height="170" aria-label="반복 실행 피해면적 분포"></canvas>
+  </div>
+
+  <div class="panel" id="p6" hidden>
+    <h2>정책 시나리오 비교</h2>
+    <p class="lead">날씨·식생·발화점·전이 규칙은 그대로 두고 <b>대책만</b> 바꿔 비교합니다(통제 변인). 예산은 40점이고, 확률 모형이라 시나리오마다 여러 번 반복합니다. <b>6번 탭에서 보완을 마친 규칙</b>으로 비교해야 의미가 있어요. 비화가 꺼져 있으면 불이 하천을 못 넘어 대책 차이가 거의 드러나지 않습니다.</p>
+    <div class="scroll"><table><thead><tr><th>대책</th><th>비용</th><th>현실의 정책</th></tr></thead><tbody>
+      <tr><td>방화선 1칸</td><td>1점</td><td>방화선·임도 구축, 내화수림대</td></tr>
+      <tr><td>수종전환 1칸</td><td>0.5점</td><td>숲가꾸기, 활엽수 전환 조림 (느리지만 영구적)</td></tr>
+      <tr><td>헬기 1대</td><td>10점</td><td>진화 헬기 확보 (강풍에는 못 뜬다)</td></tr>
+      <tr><td>지상진화대 1팀</td><td>5점</td><td>산불재난특수진화대 확충</td></tr>
+    </tbody></table></div>
+    <h3>비교할 시나리오</h3>
+    <p class="lead"><b>E. 우리 모둠 정책</b>은 3번 탭에서 지금 편집한 지도·진화 자원·방화선 완성 턴을 그대로 씁니다. 나머지는 원래 지도에서 출발합니다.</p>
+    <ul id="scenList"></ul>
+    <div class="bar"><label>시나리오당 반복 <select id="polN"><option>20</option><option selected>50</option></select></label><button id="polBtn" class="fire">정책 비교 실행</button></div>
+    <canvas id="polChart" class="chart" aria-label="시나리오별 피해면적 범위"></canvas>
+    <div class="scroll"><table id="polTable"></table></div>
+    <p id="polNote"></p>
+    <div class="bar"><button class="ghost" id="dlPol">정책 비교 요약표 저장 (CSV)</button></div>
+    <h3>토의 질문</h3>
+    <ol class="qs">
+      <li>피해면적 기준 1위와 마을 보호 기준 1위가 같은가? 다르다면 정책 목표를 무엇으로 정해야 할까?</li>
+      <li>헬기가 강풍 때 뜨지 못하는 규칙은 결과에 어떤 영향을 주었을까? (띠의 ✕H 표시 참고)</li>
+      <li>수종전환은 7일짜리 시뮬레이션에서 공정하게 평가되었을까?</li>
+      <li>우리 트윈이 단순화한 부분 때문에 과대·과소평가된 정책이 있을까?</li>
+    </ol>
+    <blockquote>“2025년 의성 산불 기상 조건을 재현한 디지털 트윈에서 [정책]은 예산 [ ]점으로 피해면적을 [ ]% 줄였고, 마을 피해는 평균 [ ]칸이었다. 다만 우리 모형은 [한계]를 단순화했으므로 [보완할 점]이 필요하다.”</blockquote>
+    <div class="bar"><button class="ghost" id="resetAll">모든 설정 처음으로</button></div>
+  </div>
+</section>
+</main>
+<div id="toast" role="status"></div>
+<script>
+const MAP_BASE = ["PBFFBBFBBBBBPPPPBWWBBPPPPPPPPPPPPPPBPBPP", "BBBFBBBPPPPPPPPPPWWBBBPPPPPPPPPPPPPBBPPP", "PFBFFFBFPPPBPPPPBWWBBBBBPPPPPPBBBPBBBPPP", "PBFFFBFBBPPPPPPBBWWWBBBBBPPPPPPBBBPPPPPP", "FBBPFPBFBPPBPPPPBBWWBBBBPPPPPPPPBPPPPPPP", "FBPBFBFFBBPBPPPBBBWWBBPPPPPPPPPPBBPPPPBB", "FPPFBBFBBPPBPPPBBBWWWPPPPPPPPBPPBPPPPPBB", "FBPBBPFFFPBBPPBBBBPWWPPPPPPPPPPPPPPPPBBB", "BPFPFPFPFPPBBBBBBBPWWPPVVVBBBPPPPPPPPPPB", "FBBBPBBBBBBBBBBBBPPWWPPVVVBBBBBPPPPPPPPP", "FFPFFBBFBBPBBBBBPPPWWPPVVVBBBBPPPBPPPPPP", "PBBBFPFFBBBBBBBPPPWWWBPBPBBBPPPPPBBPPPPP", "BBFPFBBBBBBBBBPPPPWWBBBBBPBPPPVVPPPPPPPP", "BFPFBFFBFPPBBBBPPPWWBBBBPBPPPPVVPPPPPPPP", "PPBPPPBPPBBPBBPPPWWWBBPPPPBBPPPPPPPPPPPP", "BFBBPBFFBBBBBPPPPWWPPPPPPPPBPPPPPPPPPPBB", "BFFPFPPFBPBBPPPPWWWPPPPPPPPPPPPPPPPPPPBB", "BFFFPPBPBBBPPPPPWWPPPPPPPPPPPPPPPPPPPPPP", "BBPFPFPPPPPPPPPPWWPPPPBBPPPPPPPPPPPPVVVP", "FBFFBPBFPBBBBPPWWWPPPPBBBPPPPPPPPPPPVVVP", "PPBBPBBPBBBBPPPWWBPPPPPBPPPPPPPPPPPPVVVB", "BBBPBFPPFPPBPPPWWBPPPPBBPPPPPPPPPPPPPPPB", "PBPPBFPPPBPPPPWWWBPPPBBBPPPPPPPPPPPPPBBP", "BBBFFBFPBPBBPPWWPBPPPBBBPPPPPPPPPPPPBBBP", "PBBBBPFBPBBBPPWWPPPPPBBBPPPPPPPPBBBBBBPP", "FPPPPFBPPPPBPPWWPPPPPPBBBPPVVVPBBBBBBPPB", "BBPPPPFPBPBBPPWWWPPPBBBBPPPVVVPBBPPBPBBP", "PVVVPFPFBPPPBBBWWPPBBBBPPPPVVVPPPBPPBBBB", "BVVVBBPBPBBPBBBWWPPPPPPPPPPPPPPPBPPPPBBB", "BBBFBBFFPPPPBBBWWPPPPPPBBBBPBPPPPBPPBBBP", "RRRRRRRRRRRRRRRWWWRRRRRRRRRRRRRRRRRRRRRR", "PPPBBFBPBPPBPBBBWWBBPPPBBPPPBBBBPPPPPPPP", "PFFFFBFFBPPBPPBBWWWBBPPPPPPPPBBPPPPPPPPP", "FPFFFBBBBPPPPPBBBWWBBPPPPPPPPPBPPPPPPPPP", "BFFBBBFPBBBPPPBBBWWWPPPBPPPPPPPPPPPPPPPP", "PPBFBBFFBBBBPPPBBBWWPPPPBPPPPPPPBBBPPPPP", "FPBBFFBBFBPPPPPPPBWWPPPPPPPPPPPPBBBPBBPP", "BFFBPFBBFBPPPPPPPPWWPPPPPPPPPPPPPPPPBBPP", "BPFBFBFFBPPPPPPPPBWWWPPPPPPPPPPPPPPBBBPP", "PFBFFBFFBPBBPPPPPBBWWPPPPPPPPPPPPPPPBPPP"];
+const HEIGHT = [[163, 158, 221, 249, 268, 277, 257, 357, 449, 522, 443, 343, 229, 148, 30, 20, 20, 20, 20, 162, 204, 260, 284, 254, 291, 423, 560, 616, 636, 730, 798, 832, 743, 743, 529, 455, 279, 235, 68, 20], [162, 233, 240, 278, 289, 254, 291, 332, 450, 440, 375, 263, 211, 139, 48, 20, 20, 20, 20, 112, 183, 257, 320, 300, 304, 419, 556, 647, 715, 782, 887, 795, 766, 634, 533, 339, 274, 149, 57, 20], [227, 260, 321, 357, 345, 334, 295, 372, 419, 414, 322, 260, 216, 199, 102, 40, 20, 20, 20, 130, 193, 308, 378, 359, 323, 392, 522, 661, 769, 894, 910, 854, 668, 618, 405, 336, 193, 174, 62, 20], [227, 294, 339, 388, 406, 337, 340, 361, 439, 415, 360, 295, 285, 258, 195, 112, 67, 20, 20, 20, 210, 315, 407, 409, 376, 383, 503, 638, 795, 879, 942, 771, 671, 522, 407, 269, 227, 169, 96, 20], [264, 287, 328, 359, 343, 324, 295, 374, 424, 429, 384, 352, 329, 316, 281, 204, 126, 75, 20, 20, 188, 294, 382, 449, 412, 441, 499, 635, 743, 853, 843, 762, 612, 571, 401, 329, 251, 233, 137, 47], [271, 301, 287, 288, 267, 244, 300, 355, 425, 404, 375, 358, 354, 334, 304, 225, 120, 50, 20, 20, 94, 185, 300, 410, 464, 475, 554, 636, 740, 802, 840, 724, 673, 618, 505, 399, 340, 285, 179, 78], [268, 257, 256, 206, 196, 229, 291, 395, 411, 388, 352, 345, 359, 353, 322, 234, 124, 20, 20, 20, 20, 47, 174, 337, 440, 517, 585, 675, 753, 828, 854, 780, 718, 713, 592, 484, 393, 324, 190, 74], [217, 224, 158, 142, 128, 188, 317, 376, 425, 376, 346, 336, 351, 348, 337, 272, 124, 26, 20, 20, 20, 46, 153, 295, 438, 516, 624, 703, 759, 832, 877, 810, 762, 767, 637, 514, 391, 309, 181, 54], [194, 158, 131, 58, 79, 174, 277, 390, 393, 398, 354, 330, 322, 339, 318, 276, 144, 20, 20, 20, 20, 104, 200, 343, 452, 578, 678, 731, 756, 795, 851, 796, 773, 761, 637, 468, 346, 268, 148, 29], [161, 171, 109, 85, 96, 185, 320, 358, 418, 392, 378, 330, 313, 314, 341, 298, 198, 124, 44, 20, 20, 199, 297, 388, 525, 635, 747, 782, 765, 769, 795, 746, 720, 722, 560, 412, 271, 213, 115, 20], [130, 146, 141, 105, 150, 251, 316, 386, 390, 410, 388, 351, 325, 340, 349, 366, 287, 209, 147, 20, 20, 280, 350, 445, 540, 666, 774, 819, 804, 778, 754, 689, 660, 660, 513, 347, 232, 162, 49, 20], [114, 142, 101, 99, 158, 240, 317, 328, 373, 378, 381, 376, 355, 359, 388, 356, 328, 250, 20, 20, 20, 308, 397, 464, 557, 657, 751, 810, 822, 783, 753, 662, 665, 659, 527, 373, 227, 143, 21, 20], [175, 151, 79, 45, 125, 239, 281, 316, 329, 330, 357, 358, 374, 369, 367, 370, 345, 299, 20, 20, 224, 335, 426, 513, 570, 631, 695, 753, 776, 777, 748, 707, 694, 737, 590, 438, 288, 172, 59, 20], [254, 185, 42, 20, 105, 230, 314, 314, 309, 290, 286, 332, 332, 339, 339, 323, 359, 331, 20, 20, 170, 249, 367, 480, 536, 586, 634, 679, 737, 746, 777, 745, 784, 782, 671, 511, 345, 257, 140, 75], [300, 181, 26, 20, 97, 257, 318, 326, 279, 221, 240, 258, 295, 297, 269, 282, 321, 20, 20, 20, 95, 162, 258, 385, 440, 514, 574, 670, 710, 749, 790, 809, 832, 860, 722, 573, 427, 317, 238, 139], [292, 184, 47, 31, 139, 262, 333, 292, 227, 162, 165, 219, 236, 266, 249, 263, 319, 20, 20, 165, 119, 125, 224, 264, 347, 418, 565, 662, 722, 724, 771, 813, 858, 880, 766, 636, 471, 392, 275, 171], [295, 205, 130, 102, 186, 275, 298, 269, 170, 109, 135, 190, 229, 195, 181, 179, 20, 20, 20, 164, 107, 152, 187, 257, 277, 403, 529, 661, 683, 655, 709, 734, 811, 834, 751, 617, 483, 380, 289, 163], [269, 243, 178, 193, 212, 266, 294, 225, 158, 83, 141, 216, 252, 199, 128, 98, 20, 20, 144, 149, 188, 211, 258, 273, 345, 400, 522, 609, 607, 593, 599, 664, 696, 757, 647, 535, 362, 294, 213, 124], [207, 196, 232, 225, 277, 298, 293, 264, 150, 123, 144, 252, 266, 187, 74, 20, 20, 20, 43, 165, 227, 288, 297, 369, 404, 463, 511, 556, 583, 543, 599, 582, 650, 662, 572, 389, 208, 111, 71, 20], [102, 173, 201, 295, 328, 365, 377, 298, 254, 150, 202, 219, 222, 92, 20, 20, 20, 20, 30, 180, 309, 351, 377, 428, 498, 505, 501, 544, 567, 609, 607, 615, 602, 647, 513, 320, 78, 20, 20, 20], [104, 124, 205, 270, 374, 422, 414, 395, 287, 259, 182, 232, 142, 75, 20, 20, 20, 20, 51, 269, 383, 420, 420, 494, 525, 512, 482, 504, 598, 640, 705, 634, 633, 642, 533, 334, 95, 20, 20, 20], [123, 145, 139, 227, 324, 398, 427, 355, 337, 220, 222, 160, 160, 57, 29, 20, 20, 34, 148, 273, 436, 417, 453, 465, 504, 475, 445, 504, 593, 713, 755, 724, 669, 678, 577, 404, 221, 108, 33, 20], [173, 116, 112, 138, 238, 339, 347, 344, 259, 240, 164, 163, 110, 105, 20, 20, 20, 184, 190, 371, 412, 468, 410, 461, 456, 463, 479, 519, 631, 713, 814, 770, 728, 730, 597, 468, 309, 250, 150, 20], [139, 142, 94, 114, 193, 273, 343, 297, 287, 214, 220, 169, 174, 131, 20, 20, 202, 222, 308, 357, 470, 406, 449, 429, 472, 514, 530, 582, 614, 702, 780, 780, 775, 751, 632, 468, 359, 291, 181, 35], [163, 139, 158, 147, 189, 282, 302, 310, 266, 257, 251, 229, 191, 164, 20, 20, 148, 214, 217, 373, 355, 425, 391, 440, 475, 524, 583, 571, 598, 641, 736, 760, 767, 782, 618, 480, 358, 293, 179, 20], [142, 204, 204, 210, 238, 262, 277, 233, 234, 251, 270, 238, 189, 145, 20, 20, 129, 148, 228, 275, 357, 333, 388, 400, 417, 499, 527, 553, 566, 632, 734, 761, 778, 762, 605, 463, 339, 274, 135, 20], [180, 228, 289, 309, 310, 309, 243, 191, 211, 241, 278, 211, 143, 100, 20, 20, 20, 145, 166, 270, 270, 317, 347, 365, 381, 411, 488, 516, 563, 667, 782, 803, 805, 749, 599, 442, 325, 208, 103, 20], [196, 297, 383, 412, 423, 365, 273, 219, 236, 295, 273, 231, 131, 83, 67, 20, 20, 146, 208, 218, 247, 251, 334, 379, 366, 421, 469, 511, 579, 675, 802, 823, 775, 748, 565, 461, 296, 183, 49, 20], [279, 381, 447, 492, 457, 399, 315, 267, 330, 334, 319, 234, 142, 54, 46, 20, 20, 165, 182, 218, 192, 231, 321, 388, 417, 455, 504, 540, 564, 664, 768, 753, 727, 641, 538, 409, 286, 163, 78, 27], [375, 437, 504, 485, 458, 399, 346, 367, 391, 412, 341, 288, 177, 107, 30, 20, 20, 163, 186, 179, 200, 219, 311, 381, 427, 478, 526, 525, 560, 625, 722, 714, 636, 608, 451, 368, 239, 167, 130, 115], [394, 471, 497, 508, 447, 402, 411, 412, 461, 409, 353, 281, 223, 120, 98, 20, 20, 20, 98, 132, 156, 258, 324, 388, 428, 482, 500, 515, 523, 610, 719, 704, 685, 617, 486, 339, 212, 169, 151, 155], [374, 438, 520, 514, 469, 422, 386, 420, 406, 372, 289, 248, 217, 189, 129, 152, 20, 20, 72, 82, 197, 310, 393, 434, 460, 492, 518, 512, 539, 625, 730, 761, 747, 739, 550, 375, 223, 163, 156, 129], [323, 410, 489, 532, 480, 384, 346, 304, 325, 292, 240, 188, 191, 150, 145, 131, 20, 20, 20, 95, 199, 355, 444, 459, 480, 511, 561, 588, 611, 674, 782, 784, 815, 792, 612, 404, 221, 164, 127, 91], [245, 333, 416, 458, 425, 342, 246, 228, 239, 256, 226, 183, 166, 175, 145, 130, 117, 20, 20, 127, 281, 373, 430, 425, 414, 504, 598, 673, 705, 762, 818, 824, 813, 792, 611, 397, 219, 123, 73, 33], [171, 203, 272, 309, 300, 245, 200, 172, 220, 261, 264, 231, 202, 176, 122, 104, 71, 20, 20, 20, 260, 343, 353, 332, 356, 440, 604, 717, 767, 804, 864, 828, 787, 747, 564, 410, 221, 119, 38, 20], [76, 119, 131, 166, 189, 193, 190, 197, 247, 306, 336, 322, 276, 210, 160, 115, 111, 67, 20, 20, 275, 321, 316, 304, 285, 412, 574, 694, 767, 804, 857, 808, 747, 650, 523, 386, 279, 165, 42, 20], [109, 82, 119, 150, 195, 244, 258, 272, 311, 369, 407, 408, 354, 262, 180, 127, 94, 73, 20, 20, 249, 310, 307, 277, 287, 388, 522, 650, 704, 795, 851, 827, 705, 631, 445, 403, 310, 257, 118, 20], [155, 173, 185, 253, 311, 335, 348, 326, 380, 416, 458, 445, 398, 298, 211, 138, 104, 60, 20, 20, 253, 286, 282, 267, 272, 373, 501, 561, 677, 767, 903, 850, 787, 626, 498, 394, 387, 318, 203, 42], [217, 195, 264, 324, 374, 389, 344, 366, 408, 488, 478, 449, 369, 280, 191, 127, 94, 80, 20, 20, 20, 232, 212, 197, 256, 378, 474, 559, 614, 772, 875, 905, 789, 730, 514, 471, 379, 366, 213, 61], [164, 205, 223, 308, 342, 320, 327, 333, 472, 513, 507, 398, 308, 197, 125, 104, 105, 108, 126, 20, 20, 200, 199, 193, 258, 397, 523, 560, 624, 704, 854, 822, 824, 705, 596, 434, 395, 279, 165, 20]];
+// ===== 엔진 (Python 노트북과 같은 규칙) =====
+const DIRS8 = ['북','북동','동','남동','남','남서','서','북서'];
+const NB = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
+const S_OK=0, S_BURN=1, S_ASH=2, S_OUT=3;
+function dirName(deg){ return DIRS8[Math.floor((((deg%360)+360)%360+22.5)/45)%8]; }
+function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+
+function buildSchedule(days, windDir, th, seed){
+  const rnd = mulberry32(seed*9973+1); const out=[];
+  const slots=['00~06','06~12','12~18','18~24'];
+  for(const d of days){
+    for(const s of slots){
+      let deg = windDir[d.date];
+      if(rnd() < th.jitter) deg += (rnd()<0.5?-45:45);
+      deg = ((deg%360)+360)%360;
+      out.push({date:d.date, slot:s, deg,
+        wind: d.wind < th.w1 ? '약' : (d.wind <= th.w2 ? '중' : '강'),
+        hum: d.rh < th.h1 ? '건조' : (d.rh <= th.h2 ? '보통' : '습윤'),
+        risk: d.dry >= th.r2 ? '높음' : (d.dry >= th.r1 ? '보통' : '낮음'),
+        rain: d.precip >= th.rainMM });
+    }
+  }
+  return out;
+}
+
+function simulate(map, sched, ign, ignTurn, resources, P, fbTurn, seed, record){
+  const rnd = mulberry32(seed*7919+13);
+  const H=map.length, W=map[0].length, N=H*W;
+  const fuel=new Float32Array(N), isX=new Uint8Array(N), isV=new Uint8Array(N), noburn=new Uint8Array(N);
+  const dm = P.dryMul[P.dryGrade] ?? 1;
+  for(let r=0;r<H;r++)for(let c=0;c<W;c++){ const ch=map[r][c], i=r*W+c;
+    let f;
+    if('FBPb'.includes(ch)) f = P.veg[ch==='b'?'B':ch] * dm;   // 식생 유형 × 연료 건조도
+    else f = P.fuel[ch];
+    fuel[i] = (f===undefined?1:f);
+    isX[i]= ch==='X'?1:0; isV[i]= ch==='V'?1:0; noburn[i]= fuel[i]<=0?1:0; }
+  const st=new Uint8Array(N), age=new Uint8Array(N);
+  const HT = P.heightArr;
+  const frames=[], log=[]; let prevC=null, outCum=0;
+  for(let t=0;t<sched.length;t++){
+    const k=sched[t], ev=[];
+    if(t===ignTurn){ st[ign[0]*W+ign[1]]=S_BURN; ev.push('발화'); }
+    const strong = k.wind==='강';
+    const f = new Float32Array(fuel);
+    for(let i=0;i<N;i++) if(isX[i]) f[i] = t<fbTurn ? 1.0 : P.fuel.X;
+    if(t===fbTurn && isX.some(v=>v)) ev.push('방화선 완성');
+    if(k.rain){ for(let i=0;i<N;i++) if(st[i]===S_BURN && rnd()<P.rainOut){ st[i]=S_OUT; outCum++; } ev.push('강수'); }
+    let heli='-';
+    for(const a of resources){
+      if(t<a.arrive) continue;
+      if(a.kind==='헬기' && strong && P.heliStop){ heli='중단(강풍)'; continue; }
+      if(a.kind==='헬기') heli='운항';
+      if(t===a.arrive) ev.push(a.name+' 도착');
+      for(let r=Math.max(0,a.r-a.rad);r<=Math.min(H-1,a.r+a.rad);r++)
+        for(let c=Math.max(0,a.c-a.rad);c<=Math.min(W-1,a.c+a.rad);c++){
+          const i=r*W+c; if(st[i]===S_BURN && rnd()<a.p){ st[i]=S_OUT; outCum++; } }
+    }
+    const base=P.base[k.risk], hum=P.hum[k.hum], D=P.windW[k.wind], rainM=k.rain?P.rainMul:1;
+    const to=((k.deg+180)%360)*Math.PI/180, vx=Math.sin(to), vy=-Math.cos(to);
+    const wf = NB.map(([dr,dc])=>{ const n=Math.hypot(dr,dc); const cos=(dc*vx+dr*vy)/n;
+      return Math.max(P.windMin, D*Math.pow((1+cos)/2,(D-1)*P.focus)) * (n>1?0.7:1); });
+    const steps=P.steps[k.wind];
+    for(let s=0;s<steps;s++){
+      const burning=[]; for(let i=0;i<N;i++) if(st[i]===S_BURN) burning.push(i);
+      const neu=new Uint8Array(N);
+      // 각 칸이 이웃 방향마다 시도 (Python과 동일: 대상 칸 × 방향별 독립 시도)
+      for(let r=0;r<H;r++)for(let c=0;c<W;c++){ const i=r*W+c; if(st[i]!==S_OK||noburn[i]) continue;
+        for(let d=0;d<8;d++){ const sr=r-NB[d][0], sc=c-NB[d][1];
+          if(sr<0||sr>=H||sc<0||sc>=W) continue;
+          if(st[sr*W+sc]!==S_BURN) continue;
+          let sl=1; if(P.slopeOn){ sl=Math.min(2.5,Math.max(0.4,1+P.slopeK*(HT[i]-HT[sr*W+sc])/100)); }
+          const p=Math.min(0.95, P.scale*base*hum*wf[d]*rainM*f[i]*sl);
+          if(rnd()<p){ neu[i]=1; } } }
+      for(let i=0;i<N;i++) if(neu[i]) st[i]=S_BURN;
+    }
+    if(P.spot && strong){ let n=0;
+      for(let i=0;i<N;i++){ if(st[i]!==S_BURN) continue; if(rnd()<P.spotP){
+        const r=Math.floor(i/W), c=i%W; const d=2+Math.floor(rnd()*3), side=Math.floor(rnd()*3)-1;
+        const rr=Math.round(r+vy*d-vx*side), cc=Math.round(c+vx*d+vy*side);
+        if(rr>=0&&rr<H&&cc>=0&&cc<W){ const j=rr*W+cc; if(st[j]===S_OK&&!noburn[j]){ st[j]=S_BURN; n++; } } } }
+      if(n) ev.push('비화 '+n+'곳'); }
+    let burn=0, ash=0, vil=0, sr=0, sc=0, cnt=0, east=-1;
+    for(let i=0;i<N;i++){ if(st[i]===S_BURN){ age[i]++; if(age[i]>=P.burnTurns) st[i]=S_ASH; } }
+    for(let i=0;i<N;i++){ const dmg = st[i]===S_BURN||st[i]===S_ASH; if(st[i]===S_BURN)burn++; if(st[i]===S_ASH)ash++;
+      if(dmg){ cnt++; const r=Math.floor(i/W), c=i%W; sr+=r; sc+=c; if(c>east)east=c; if(isV[i])vil++; } }
+    let dir='-';
+    if(cnt){ const cen=[sr/cnt, sc/cnt];
+      if(!prevC || Math.hypot(cen[0]-prevC[0],cen[1]-prevC[1])<0.3) dir='정체';
+      else dir=dirName(Math.atan2(cen[1]-prevC[1], -(cen[0]-prevC[0]))*180/Math.PI);
+      prevC=cen; }
+    let held=0;
+    if(t>=fbTurn){ for(let r=0;r<H;r++)for(let c=0;c<W;c++){ const i=r*W+c; if(!isX[i]) continue;
+      if(st[i]===S_BURN||st[i]===S_ASH) continue; let adj=false;
+      for(const [dr,dc] of NB){ const rr=r+dr, cc=c+dc; if(rr<0||rr>=H||cc<0||cc>=W) continue; const s2=st[rr*W+cc]; if(s2===S_BURN||s2===S_ASH){adj=true;break;} }
+      if(adj) held++; } }
+    log.push({턴:t, 날짜:k.date, 시간대:k.slot, 풍향:dirName(k.deg), 풍속:k.wind, 습도:k.hum, 위험등급:k.risk,
+      사건:ev.join(', ')||'-', 헬기:heli, 연소중:burn, 소실누적:ash, 진화누적:outCum, 방화선버팀:held,
+      마을피해:vil, 피해면적_ha:cnt*P.cellHa, 확산방향:dir, 최동단열:cnt?east:null});
+    if(record) frames.push(st.slice());
+  }
+  return {log, frames};
+}
+if(typeof module!=='undefined') module.exports={buildSchedule,simulate,dirName};
+// ===== 데이터 =====
+const DAYS=[{date:'03-22',tmax:23.1,wind:28.5,gust:60.1,rh:18,precip:0,dry:4,note:'발화'},
+{date:'03-23',tmax:24.7,wind:16.0,gust:33.5,rh:14,precip:0,dry:5,note:''},
+{date:'03-24',tmax:22.5,wind:30.4,gust:62.6,rh:17,precip:0,dry:6,note:''},
+{date:'03-25',tmax:26.5,wind:40.0,gust:81.0,rh:12,precip:0,dry:7,note:'동해안까지 확산'},
+{date:'03-26',tmax:26.1,wind:18.3,gust:38.9,rh:10,precip:0,dry:8,note:''},
+{date:'03-27',tmax:22.8,wind:20.1,gust:43.6,rh:39,precip:0.1,dry:9,note:'밤 비'},
+{date:'03-28',tmax:12.4,wind:18.0,gust:37.4,rh:38,precip:1.0,dry:0,note:'주불 진화'}];
+const VILLAGES={'의성읍':[28,2],'안동':[9,24],'청송':[26,28],'영양':[12,30],'영덕':[19,37]};
+const TERRAIN={F:{n:'농경지·초지',c:'#EBDC9C'},B:{n:'활엽수림',c:'#A9D08A'},P:{n:'침엽수림',c:'#3F7D3A'},b:{n:'수종전환(활엽)',c:'#D2E46A'},
+ W:{n:'하천',c:'#4F8CC4'},R:{n:'도로',c:'#A3A59C'},V:{n:'마을',c:'#B07CC6'},X:{n:'방화선',c:'#8A5526'}};
+const STATEC={1:'#F0521C',2:'#2A2826',3:'#1FB6D9'};
+const COST={X:1,b:0.5,'헬기':10,'지상':5}, BUDGET=40, REAL_HA=99282;
+
+function defaults(){ return {
+  map: MAP_BASE.map(r=>r.split('')), ign:[21,4], ignTurn:1, fbTurn:8,
+  res:[{name:'지상진화대',kind:'지상',r:27,c:3,rad:2,arrive:2,p:0.3},{name:'헬기1',kind:'헬기',r:20,c:12,rad:3,arrive:6,p:0.4}],
+  windDir:{'03-22':250,'03-23':270,'03-24':260,'03-25':270,'03-26':290,'03-27':300,'03-28':320},
+  th:{w1:20,w2:30,h1:20,h2:35,r1:3,r2:7,rainMM:1.0,jitter:0.3}, schedSeed:7,
+  P:{base:{'낮음':0.2,'보통':0.4,'높음':0.6},scale:0.5,windW:{'약':1,'중':1.5,'강':2},focus:4,windMin:0.05,
+     hum:{'건조':1.3,'보통':1,'습윤':0.6},fuel:{F:0.5,B:0.8,P:1.3,W:0,R:0.3,X:0.1,V:1.0,b:0.8},
+     steps:{'약':1,'중':2,'강':3},burnTurns:2,rainMul:0.3,rainOut:0.5,spot:false,spotP:0.06,heliStop:true,cellHa:400,
+     veg:{F:0.5,B:0.8,P:1.3}, dryMul:{'건조':1.2,'보통':1.0,'습윤':0.8}, slopeOn:false, slopeK:0.2},
+  dry:{index:'NDVI', now:0.1868, normal:0.2155, band:0.02},
+  runSeed:42, runNo:1 }; }
+let S=defaults(), sched=[], sim=null, curTurn=0, playing=null, history=[], tool='X', selRes=0, dl=null;
+try{ const s=localStorage.getItem('bulia-dt-v2'); if(s){ const o=JSON.parse(s), d=defaults(); S={...d,...o,P:{...d.P,...(o.P||{})},dry:{...d.dry,...(o.dry||{})},th:{...d.th,...(o.th||{})}}; } }catch(e){}
+try{ const h=localStorage.getItem('bulia-dt-hist2'); if(h) history=JSON.parse(h); }catch(e){}
+function persist(){ try{ localStorage.setItem('bulia-dt-v2',JSON.stringify(S)); localStorage.setItem('bulia-dt-hist2',JSON.stringify(history)); }catch(e){} }
+const HFLAT = HEIGHT.flat();
+function dryAnom(){ return Math.round((S.dry.now - S.dry.normal)*10000)/10000; }
+function dryGrade(){ const d=dryAnom(); return d < -S.dry.band ? '건조' : (d > S.dry.band ? '습윤' : '보통'); }
+function PP(){ return {...S.P, dryGrade: dryGrade(), heightArr: HFLAT}; }
+function cellFuel(ch){ if('FBPb'.includes(ch)) return S.P.veg[ch==='b'?'B':ch]*S.P.dryMul[dryGrade()]; return S.P.fuel[ch]; }
+const $=q=>document.querySelector(q), $$=q=>[...document.querySelectorAll(q)];
+const mapStr=()=>S.map.map(r=>r.join(''));
+function getP(o,p){ return p.split('.').reduce((a,k)=>a[k],o); }
+function setP(o,p,v){ const ks=p.split('.'); const last=ks.pop(); ks.reduce((a,k)=>a[k],o)[last]=v; }
+
+// ===== 다운로드 =====
+(async()=>{ try{ if(window.claude&&window.claude.use){ dl=await window.claude.use('downloads'); } }catch(e){ dl=null; } })();
+function toCSV(rows){ if(!rows.length) return ''; const ks=Object.keys(rows[0]);
+  const esc=v=>{ const s=v===null||v===undefined?'':String(v); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; };
+  return '\ufeff'+[ks.join(','),...rows.map(r=>ks.map(k=>esc(r[k])).join(','))].join('\n'); }
+async function saveFile(name,text){
+  if(dl){ try{ await dl.save({filename:name,data:text}); toast(name+' 저장됨'); return; }
+    catch(e){ if(e&&e.code==='declined'){ toast('저장을 취소했어요'); return; } } }
+  try{ await navigator.clipboard.writeText(text.replace(/^\ufeff/,'')); toast('파일 저장을 쓸 수 없어 표를 클립보드에 복사했어요. 엑셀에 붙여넣으세요.'); }
+  catch(e){ toast('저장과 복사를 모두 쓸 수 없는 환경이에요.'); } }
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),3200); }
+
+// ===== 스케줄 =====
+function rebuild(){ sched=buildSchedule(DAYS,S.windDir,S.th,S.schedSeed); }
+function invalidate(){ if(sim){ sim=null; stopPlay(); $('#stale').hidden=false; } persist(); drawMap(); drawTimeline(); }
+
+// ===== 지도 그리기 =====
+const cv=$('#map'), ctx=cv.getContext('2d');
+let cell=14;
+function sizeMap(){ const w=Math.min(cv.parentElement.clientWidth, 620); cell=Math.max(7,Math.floor(w/40)); const px=cell*40;
+  const dpr=window.devicePixelRatio||1; cv.width=px*dpr; cv.height=px*dpr; cv.style.width=px+'px'; cv.style.height=px+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); drawMap(); }
+let view='terrain', inspectCell=null;
+function fuelColor(v){ if(v<=0) return '#4F8CC4'; const t=Math.max(0,Math.min(1,(v-0.25)/1.45));
+  const s=[[255,244,196],[247,196,96],[226,112,40],[158,30,24]]; const x=t*3, i=Math.min(2,Math.floor(x)), u=x-i;
+  const m=k=>Math.round(s[i][k]+(s[i+1][k]-s[i][k])*u); return `rgb(${m(0)},${m(1)},${m(2)})`; }
+function heightColor(h){ const t=Math.min(1,h/900); const s=[[214,226,186],[160,170,110],[140,110,70],[235,232,225]]; const x=t*3,i=Math.min(2,Math.floor(x)),u=x-i;
+  const m=k=>Math.round(s[i][k]+(s[i+1][k]-s[i][k])*u); return `rgb(${m(0)},${m(1)},${m(2)})`; }
+function drawMap(){
+  const fr = sim ? sim.frames[curTurn] : null;
+  for(let r=0;r<40;r++)for(let c=0;c<40;c++){ const ch=S.map[r][c]; let col=(TERRAIN[ch]||{c:'#fff'}).c;
+    if(view==='fuel' && !'WRXV'.includes(ch)) col=fuelColor(cellFuel(ch));
+    if(view==='height'){ col = ch==='W' ? '#4F8CC4' : heightColor(HEIGHT[r][c]); }
+    if(fr){ const s=fr[r*40+c]; if(s) col=STATEC[s]; }
+    ctx.fillStyle=col; ctx.fillRect(c*cell,r*cell,cell,cell); }
+  ctx.strokeStyle='rgba(0,0,0,.06)'; ctx.lineWidth=1;
+  for(let i=0;i<=40;i+=5){ ctx.beginPath(); ctx.moveTo(i*cell,0); ctx.lineTo(i*cell,40*cell); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0,i*cell); ctx.lineTo(40*cell,i*cell); ctx.stroke(); }
+  ctx.font=`600 ${Math.max(9,cell*0.8)}px "IBM Plex Sans KR", sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
+  for(const [n,[r,c]] of Object.entries(VILLAGES)){ const x=Math.min(38.5,Math.max(1.5,c+0.5))*cell, y=(r+0.5)*cell;
+    ctx.lineWidth=3; ctx.strokeStyle='rgba(255,255,255,.9)'; ctx.strokeText(n,x,y); ctx.fillStyle='#3b1f4a'; ctx.fillText(n,x,y); }
+  S.res.forEach((a,i)=>{ ctx.setLineDash([4,3]); ctx.lineWidth=2; ctx.strokeStyle= i===selRes&&tool==='RES' ? '#F0521C':'#0e7fa0';
+    ctx.strokeRect((a.c-a.rad)*cell,(a.r-a.rad)*cell,(2*a.rad+1)*cell,(2*a.rad+1)*cell); ctx.setLineDash([]);
+    ctx.fillStyle='#0e7fa0'; ctx.beginPath(); ctx.arc((a.c+.5)*cell,(a.r+.5)*cell,cell*0.62,0,7); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font=`700 ${Math.max(8,cell*0.7)}px "IBM Plex Sans KR", sans-serif`; ctx.fillText(a.kind==='헬기'?'H':'G',(a.c+.5)*cell,(a.r+.55)*cell); });
+  if(view==='height'){ ctx.font=`500 ${Math.max(8,cell*0.55)}px sans-serif`; ctx.fillStyle='rgba(40,30,20,.75)';
+    for(let r=2;r<40;r+=5)for(let c=2;c<40;c+=5) ctx.fillText(HEIGHT[r][c],(c+.5)*cell,(r+.5)*cell); }
+  if(inspectCell){ ctx.lineWidth=3; ctx.strokeStyle='#F0521C'; ctx.strokeRect(inspectCell[1]*cell-1,inspectCell[0]*cell-1,cell+2,cell+2); }
+  star((S.ign[1]+.5)*cell,(S.ign[0]+.5)*cell,cell*0.95);
+  if(sched.length){ const k=sched[curTurn]; windArrow(40*cell-34,34,k); }
+  $('#turnInfo').innerHTML = sched.length ? turnText(curTurn) : '';
+  renderInspect(); drawLegend();
+}
+function drawLegend(){ const el=$('#viewLegend'); if(!el) return;
+  if(view==='terrain'){ el.innerHTML=''; return; }
+  if(view==='fuel'){ el.innerHTML=`<span>연료 계수(식생 유형 × 연료 건조도)</span><span class="ramp fuel"></span><span>낮음 0.3 → 높음 1.7+</span>`; return; }
+  el.innerHTML=`<span>가상 고도</span><span class="ramp hgt"></span><span>0m → 900m (숫자: 해당 칸 고도)</span>${S.P.slopeOn?'':' <b>· 경사 효과 꺼짐</b>'}`; }
+function renderInspect(){ const el=$('#inspect'); if(!el) return;
+  if(!inspectCell){ el.innerHTML='<span class="muted">“칸 살펴보기”를 켜고 지도의 칸을 누르면, 그 칸으로 불이 번질 확률이 어떤 요인들의 곱으로 정해지는지 보여 줘요.</span>'; return; }
+  const [r,c]=inspectCell, ch=S.map[r][c], k=sched[curTurn]; const nm=(TERRAIN[ch]||{n:'?'}).n;
+  if(!'FBPbV'.includes(ch) && S.P.fuel[ch]<=0){ el.innerHTML=`<b>(${r}, ${c}) ${nm}</b> · 고도 ${HEIGHT[r][c]}m — 타지 않는 칸이에요.`; return; }
+  const to=((k.deg+180)%360)*Math.PI/180, vx=Math.sin(to), vy=-Math.cos(to);
+  const dr=-Math.round(vy), dc=-Math.round(vx); const sr=r+dr, sc=c+dc;   // 바람 불어오는 쪽 이웃
+  const D=S.P.windW[k.wind], n=Math.hypot(dr,dc)||1, cos=(-dc*vx+-dr*vy)/n;
+  const wind=Math.max(S.P.windMin, D*Math.pow((1+cos)/2,(D-1)*S.P.focus))*(n>1?0.7:1);
+  const veg = 'FBPb'.includes(ch) ? S.P.veg[ch==='b'?'B':ch] : S.P.fuel[ch];
+  const dry = 'FBPb'.includes(ch) ? S.P.dryMul[dryGrade()] : 1;
+  const inside=sr>=0&&sr<40&&sc>=0&&sc<40;
+  let slope=1; if(S.P.slopeOn && inside) slope=Math.min(2.5,Math.max(0.4,1+S.P.slopeK*(HEIGHT[r][c]-HEIGHT[sr][sc])/100));
+  const rain=k.rain?S.P.rainMul:1, base=S.P.base[k.risk], hum=S.P.hum[k.hum];
+  const fbPending = ch==='X' && curTurn<S.fbTurn;
+  const vegV = fbPending?1:veg, dryV = fbPending?1:dry;
+  const p=Math.min(0.95,S.P.scale*base*hum*wind*vegV*dryV*slope*rain);
+  const f=(x)=>(+x).toFixed(2);
+  el.innerHTML=`<b>(${r}, ${c}) ${nm}</b> · 고도 ${HEIGHT[r][c]}m — 턴 ${curTurn}(3/${k.date.slice(3)} ${k.slot})에 바람 불어오는 쪽(${dirName(k.deg)}) 이웃이 타고 있다면:
+  <div class="prod"><span>변환배율<b>${f(S.P.scale)}</b></span>×<span>기본확률·${k.risk}<b>${f(base)}</b></span>×<span>바람·${k.wind}<b>${f(wind)}</b></span>×<span>습도·${k.hum}<b>${f(hum)}</b></span>×<span class="veg">식생 유형<b>${f(vegV)}</b></span>×<span class="veg">연료 건조도·${'FBPb'.includes(ch)?dryGrade():'-'}<b>${f(dryV)}</b></span>×<span class="veg">경사${S.P.slopeOn?(inside?' '+(HEIGHT[r][c]-HEIGHT[sr][sc])+'m':''):' 꺼짐'}<b>${f(slope)}</b></span>×<span>강수<b>${f(rain)}</b></span>=<span class="res"><b>${(p*100).toFixed(0)}%</b></span></div>
+  <small class="muted">한 단계에서 이 한 이웃 때문에 옮겨붙을 확률이에요. 실제로는 타는 이웃이 여럿이고 풍속이 강하면 한 턴에 여러 단계 반복돼요.${fbPending?' 방화선은 아직 완성 전이라 일반 숲처럼 계산돼요.':''}</small>`; }
+function star(x,y,R){ ctx.beginPath(); for(let i=0;i<10;i++){ const a=-Math.PI/2+i*Math.PI/5, rr=i%2?R*0.45:R; ctx.lineTo(x+rr*Math.cos(a),y+rr*Math.sin(a)); }
+  ctx.closePath(); ctx.fillStyle='#F0521C'; ctx.fill(); ctx.lineWidth=1.5; ctx.strokeStyle='#fff'; ctx.stroke(); }
+function windArrow(x,y,k){ ctx.save(); ctx.fillStyle='rgba(255,255,255,.88)'; ctx.beginPath(); ctx.arc(x,y,26,0,7); ctx.fill();
+  ctx.translate(x,y); ctx.rotate(((k.deg+180)%360)*Math.PI/180); const L={'약':10,'중':15,'강':20}[k.wind];
+  ctx.strokeStyle='#1f2b1d'; ctx.fillStyle='#1f2b1d'; ctx.lineWidth={'약':2,'중':3,'강':4}[k.wind];
+  ctx.beginPath(); ctx.moveTo(0,L); ctx.lineTo(0,-L+4); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0,-L-4); ctx.lineTo(-6,-L+5); ctx.lineTo(6,-L+5); ctx.fill(); ctx.restore(); }
+function turnText(t){ const k=sched[t]; let s=`<b>턴 ${t}</b> 3/${k.date.slice(3)} ${k.slot}시 · ${dirName(k.deg)}풍(불은 ${dirName(k.deg+180)}쪽으로) · 풍속 ${k.wind} · 습도 ${k.hum} · 위험 ${k.risk}${k.rain?' · 강수':''}`;
+  if(sim){ const L=sim.log[t]; s+=`<br>연소 중 ${L.연소중}칸 · 소실 ${L.소실누적}칸 · 진화 ${L.진화누적}칸 · 마을 피해 ${L.마을피해}칸 · 피해 ${L.피해면적_ha.toLocaleString()}ha${L.사건!=='-'?' · <em>'+L.사건+'</em>':''}`; }
+  return s; }
+
+// ===== 타임라인 (시간 변화 변수 띠) =====
+function drawTimeline(){ const el=$('#timeline'); el.innerHTML='';
+  sched.forEach((k,t)=>{ const b=document.createElement('button'); b.className='tl hum-'+k.hum+(t===curTurn?' cur':'')+(t%4===0?' day':'');
+    b.title=`턴 ${t}: 3/${k.date.slice(3)} ${k.slot} ${dirName(k.deg)}풍 ${k.wind} ${k.hum}`;
+    b.setAttribute('aria-label',b.title);
+    b.innerHTML=`<i class="w-${k.wind}" style="transform:rotate(${(k.deg+180)%360}deg)">↑</i>${k.rain?'<s>☂</s>':''}${sim&&sim.log[t].헬기==='중단(강풍)'?'<u>✕H</u>':''}`;
+    b.onclick=()=>{ curTurn=t; stopPlay(); drawMap(); drawTimeline(); syncScrub(); highlightLog(); }; el.appendChild(b); });
+  $('#tlDates').innerHTML=DAYS.map(d=>`<span>3/${d.date.slice(3)}${d.note?'<small>'+d.note+'</small>':''}</span>`).join(''); }
+
+// ===== 지도 편집 =====
+let painting=false;
+function cellAt(e){ const r=cv.getBoundingClientRect(); const c=Math.floor((e.clientX-r.left)/cell), rr=Math.floor((e.clientY-r.top)/cell); return (rr>=0&&rr<40&&c>=0&&c<40)?[rr,c]:null; }
+function applyTool(p){ if(!p) return; const [r,c]=p; const ch=S.map[r][c], base=MAP_BASE[r][c];
+  if(tool==='LOOK'){ inspectCell=[r,c]; return; }
+  if(tool==='X'){ if('FBPb'.includes(ch)) S.map[r][c]='X'; }
+  else if(tool==='b'){ if(ch==='P') S.map[r][c]='b'; }
+  else if(tool==='ERASE'){ S.map[r][c]=base; }
+  else if(tool==='IGN'){ if(S.P.fuel[ch]>0){ S.ign=[r,c]; } }
+  else if(tool==='RES'){ if(S.res[selRes]){ S.res[selRes].r=r; S.res[selRes].c=c; renderRes(); } }
+}
+cv.addEventListener('pointerdown',e=>{ if(tool==='LOOK'){ applyTool(cellAt(e)); drawMap(); return; } painting=true; cv.setPointerCapture(e.pointerId); applyTool(cellAt(e)); invalidate(); updateCost(); });
+cv.addEventListener('pointermove',e=>{ if(!painting||!['X','b','ERASE'].includes(tool)) return; applyTool(cellAt(e)); drawMap(); });
+cv.addEventListener('pointerup',()=>{ if(painting){ painting=false; invalidate(); updateCost(); } });
+function mapCost(m, res){ let s=0; for(const row of m) for(const ch of row){ if(ch==='X') s+=COST.X; if(ch==='b') s+=COST.b; } return s+res.reduce((a,r)=>a+COST[r.kind],0); }
+function updateCost(){ const c=mapCost(S.map,S.res); $('#costNow').textContent=c.toFixed(1).replace('.0',''); $('#costNow').parentElement.classList.toggle('over',c>BUDGET);
+  let x=0,b=0; for(const row of S.map) for(const ch of row){ if(ch==='X')x++; if(ch==='b')b++; } $('#cntX').textContent=x; $('#cntB').textContent=b; }
+function renderRes(){ const el=$('#resList'); el.innerHTML='';
+  S.res.forEach((a,i)=>{ const d=document.createElement('div'); d.className='res'+(i===selRes?' sel':'');
+    d.innerHTML=`<label class="pick"><input type="radio" name="selres" ${i===selRes?'checked':''}> <input class="nm" value="${a.name}" aria-label="이름"></label>
+    <select aria-label="종류"><option ${a.kind==='헬기'?'selected':''}>헬기</option><option ${a.kind==='지상'?'selected':''}>지상</option></select>
+    <label>도착 턴 <input type="number" min="0" max="27" value="${a.arrive}" data-k="arrive"></label>
+    <label>반경 <input type="number" min="1" max="5" value="${a.rad}" data-k="rad"></label>
+    <label>소화확률 <input type="number" min="0" max="1" step="0.05" value="${a.p}" data-k="p"></label>
+    <span class="pos">(${a.r}, ${a.c})</span><button class="ghost del" aria-label="삭제">삭제</button>`;
+    d.querySelector('input[type=radio]').onchange=()=>{ selRes=i; setTool('RES'); renderRes(); };
+    d.querySelector('.nm').onchange=e=>{ a.name=e.target.value; invalidate(); };
+    d.querySelector('select').onchange=e=>{ a.kind=e.target.value; if(a.kind==='헬기'){a.rad=3;a.p=0.4;}else{a.rad=2;a.p=0.3;} renderRes(); invalidate(); updateCost(); };
+    d.querySelectorAll('input[data-k]').forEach(inp=>inp.onchange=e=>{ a[inp.dataset.k]=+e.target.value; invalidate(); });
+    d.querySelector('.del').onclick=()=>{ S.res.splice(i,1); selRes=0; renderRes(); invalidate(); updateCost(); };
+    el.appendChild(d); });
+  $('#addRes').disabled=S.res.length>=3; }
+function setTool(t){ tool=t; $$('.tool').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tool===t)); cv.dataset.tool=t; drawMap(); }
+function setView(v){ view=v; $$('.view').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===v)); drawMap(); }
+
+// ===== 슬라이더 패널 =====
+const PARAMS=[
+ ['6차시 확률표 (위험등급별 기본확산확률)',[['P.base.낮음','낮음',0,1,0.05],['P.base.보통','보통',0,1,0.05],['P.base.높음','높음',0,1,0.05]]],
+ ['보드게임 → 디지털 변환',[['P.scale','변환배율',0.1,1.5,0.05,'한 턴에 여러 단계·8방향으로 시도하므로 확률을 줄이는 배율']]],
+ ['바람 (타원형 확산)',[['P.windW.약','바람가중치 약',1,3,0.1],['P.windW.중','바람가중치 중',1,3,0.1],['P.windW.강','바람가중치 강',1,4,0.1],['P.focus','바람 집중도',0,8,0.5,'클수록 옆·뒤로 덜 번지고 바람 방향으로 좁고 길게 번짐']]],
+ ['습도 보정',[['P.hum.건조','건조',0.5,3,0.1],['P.hum.보통','보통',0.5,2,0.1],['P.hum.습윤','습윤',0,1.5,0.05]]],
+ ['사건 변수',[['P.spotP','비화 확률',0,0.3,0.01,'강풍 턴에 불똥이 바람 방향 2~4칸 앞으로 튀는 확률'],['P.rainMul','강수 보정',0,1,0.05],['P.rainOut','강수 소화확률',0,1,0.05]]]];
+const THS=[['th.w1','풍속 약|중 경계 (km/h)',10,40,1],['th.w2','풍속 중|강 경계 (km/h)',15,50,1],['th.h1','습도 건조|보통 경계 (%)',5,40,1],
+ ['th.h2','습도 보통|습윤 경계 (%)',20,70,1],['th.r1','위험 보통 기준 (무강수일)',1,10,1],['th.r2','위험 높음 기준 (무강수일)',2,15,1],
+ ['th.rainMM','강수 사건 기준 (mm)',0.1,5,0.1],['th.jitter','풍향 흔들림 확률',0,1,0.05]];
+function slider(path,label,min,max,step,hint){ const v=getP(S,path); const id='s_'+path.replace(/\W/g,'_');
+  return `<div class="sl"><label for="${id}">${label}<output>${v}</output></label><input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${v}" data-path="${path}">${hint?`<small>${hint}</small>`:''}</div>`; }
+function bindSliders(root,onchange){ root.querySelectorAll('input[type=range]').forEach(inp=>{ inp.oninput=()=>{ setP(S,inp.dataset.path,+inp.value); inp.previousElementSibling.querySelector('output').textContent=inp.value; onchange(); }; }); }
+function renderParams(){ $('#params').innerHTML=PARAMS.map(([g,items])=>`<fieldset><legend>${g}</legend>${items.map(i=>slider(...i)).join('')}</fieldset>`).join('')
+  +`<fieldset><legend>켜기·끄기</legend><label class="chk"><input type="checkbox" id="spot" ${S.P.spot?'checked':''}> 비화(불똥 튐) 사용</label>
+  <label class="chk"><input type="checkbox" id="heli" ${S.P.heliStop?'checked':''}> 강풍 턴에는 헬기 출동 불가</label></fieldset>`;
+  bindSliders($('#params'),()=>{ invalidate(); });
+  $('#spot').onchange=e=>{ S.P.spot=e.target.checked; invalidate(); }; $('#heli').onchange=e=>{ S.P.heliStop=e.target.checked; invalidate(); }; }
+function renderVeg(){ const m=S.map.flat(); const cnt=ch=>m.filter(x=>x===ch).length;
+  const rows=[['F','농경지·초지','저','초본과 농업 잔재물: 빨리 타고 빨리 꺼진다. 연료량이 적다.'],
+   ['B','활엽수림','중','3월엔 잎이 없다 → 바닥의 마른 낙엽층이 연료. 수관화는 드물다. 수종전환(b) 칸도 이 계수를 따른다.'],
+   ['P','침엽수림(소나무)','고','송진·정유 성분, 겨울에도 잎이 달려 있다 → 수관화로 번지기 쉽다.']];
+  $('#vegTable tbody').innerHTML=rows.map(([ch,n,g,hint])=>`<tr><th><i class="sw" style="background:${TERRAIN[ch].c}"></i>${n}</th><td>${cnt(ch)+(ch==='B'?cnt('b'):0)}칸</td><td>${g}</td>
+    <td style="min-width:170px">${slider('P.veg.'+ch,'계수',0.1,2.5,0.05)}</td><td class="hint">${hint}</td></tr>`).join('');
+  bindSliders($('#vegTable'),()=>{ invalidate(); });
+  $('#dryBox').innerHTML=`<div class="grid2">
+    <label>위성 지수 <select id="dryIdx"><option ${S.dry.index==='NDVI'?'selected':''}>NDVI</option><option ${S.dry.index==='NDMI'?'selected':''}>NDMI</option></select></label>
+    <label>2025년 산불 직전 값 <input id="dryNow" type="number" step="0.001" value="${S.dry.now}"></label>
+    <label>평년 값 (같은 시기) <input id="dryNorm" type="number" step="0.001" value="${S.dry.normal}"></label>
+    ${slider('dry.band','보통으로 볼 범위 (±)',0.005,0.1,0.005)}</div>
+    <p class="drygrade" id="dryTxt"></p>
+    <div class="grid2">${slider('P.dryMul.건조','건조 계수',0.5,2,0.05)}${slider('P.dryMul.보통','보통 계수',0.5,2,0.05)}${slider('P.dryMul.습윤','습윤 계수',0.1,1.5,0.05)}</div>`;
+  bindSliders($('#dryBox'),()=>{ invalidate(); updateDry(); });
+  $('#dryIdx').onchange=e=>{ S.dry.index=e.target.value; if(e.target.value==='NDVI'){ S.dry.now=0.1868; S.dry.normal=0.2155; $('#dryNow').value=S.dry.now; $('#dryNorm').value=S.dry.normal; }
+    else toast('1차시 보강 노트북에서 수집한 NDMI 값(산불 직전 합성기간, 평년 같은 시기)을 입력하세요.'); invalidate(); updateDry(); };
+  $('#dryNow').onchange=e=>{ S.dry.now=+e.target.value; invalidate(); updateDry(); };
+  $('#dryNorm').onchange=e=>{ S.dry.normal=+e.target.value; invalidate(); updateDry(); };
+  $('#slopeBox').innerHTML=`<label class="chk"><input type="checkbox" id="slopeOn" ${S.P.slopeOn?'checked':''}> 경사 효과 사용 (오르막으로 더 빨리 번짐)</label>${slider('P.slopeK','오르막 100m당 확산 가중',0,0.6,0.05,'0.2면 이웃보다 100m 높은 칸으로는 ×1.2, 100m 낮은 칸으로는 ×0.8')}`;
+  bindSliders($('#slopeBox'),()=>{ invalidate(); });
+  $('#slopeOn').onchange=e=>{ S.P.slopeOn=e.target.checked; invalidate(); };
+  updateDry(); }
+function updateDry(){ const g=dryGrade(), d=dryAnom();
+  const t=$('#dryTxt'); if(t) t.innerHTML=`편차 <b>${d>0?'+':''}${d}</b> → 연료 건조도 <b class="g-${g}">${g}</b> → 식생 칸 전체에 <b>×${S.P.dryMul[g]}</b>`;
+  $('#dryBand').innerHTML=`<span class="dlabel">연료 건조도 · 위성 ${S.dry.index} 16일 주기</span><span class="dbar d-${g}">${g} ×${S.P.dryMul[g]} — 이 일주일 내내 같은 값 (느린 변수)</span>`; }
+function renderTH(){ $('#thresholds').innerHTML=THS.map(i=>slider(...i)).join('')+`<div class="sl"><label for="sseed">풍향 흔들림 seed</label><input id="sseed" type="number" value="${S.schedSeed}"></div>`;
+  bindSliders($('#thresholds'),()=>{ rebuild(); renderSched(); invalidate(); });
+  $('#sseed').onchange=e=>{ S.schedSeed=+e.target.value; rebuild(); renderSched(); invalidate(); }; }
+function renderDays(){ $('#days tbody').innerHTML=DAYS.map(d=>`<tr><th>3/${d.date.slice(3)}</th><td>${d.wind}</td><td>${d.gust}</td><td>${d.rh}</td><td>${d.precip}</td><td>${d.dry}</td>
+  <td><input type="number" min="0" max="359" value="${S.windDir[d.date]}" data-d="${d.date}" aria-label="3/${d.date.slice(3)} 주풍향"> <span class="dn">${dirName(S.windDir[d.date])}</span></td><td class="note">${d.note}</td></tr>`).join('');
+  $$('#days input').forEach(inp=>inp.onchange=e=>{ S.windDir[inp.dataset.d]=((+e.target.value%360)+360)%360; inp.nextElementSibling.textContent=dirName(S.windDir[inp.dataset.d]); rebuild(); renderSched(); invalidate(); }); }
+function schedRows(){ return sched.map((k,t)=>({턴:t,날짜:'3/'+k.date.slice(3),시간대:k.slot,풍향:dirName(k.deg),풍향_deg:k.deg,풍속등급:k.wind,습도등급:k.hum,위험등급:k.risk,강수사건:k.rain?'있음':'-'})); }
+function renderSched(){ const byDay={}; sched.forEach(k=>{ (byDay[k.date]=byDay[k.date]||[]).push(k); });
+  $('#sched tbody').innerHTML=Object.entries(byDay).map(([d,ks])=>`<tr><th>3/${d.slice(3)}</th><td>${ks.map(k=>dirName(k.deg)).join(' ')}</td><td class="g-${ks[0].wind}">${ks[0].wind}</td><td class="h-${ks[0].hum}">${ks[0].hum}</td><td>${ks[0].risk}</td><td>${ks[0].rain?'☂ 있음':'-'}</td></tr>`).join(''); }
+
+// ===== 설정표 =====
+function settingRows(){ const m=mapStr(); const cnt=ch=>m.join('').split(ch).length-1; const R=[];
+  R.push({구분:'격자',항목:'크기',설정값:'40×40 (1칸 ≈ 2km×2km = 400ha)'});
+  for(const ch of 'FBPbWRVX') R.push({구분:'격자',항목:`${TERRAIN[ch].n}(${ch}) 칸 수 / 연료 계수`,설정값:`${cnt(ch)}칸 / ×${Math.round(cellFuel(ch)*100)/100}`});
+  R.push({구분:'초기 조건',항목:'발화점(행,열) / 발화 턴',설정값:`(${S.ign}) / 턴 ${S.ignTurn}`});
+  R.push({구분:'방어 요소',항목:'방화선 완성 턴',설정값:cnt('X')?`턴 ${S.fbTurn}`:'방화선 없음'});
+  S.res.forEach(a=>R.push({구분:'방어 요소',항목:`${a.name}(${a.kind})`,설정값:`위치(${a.r},${a.c}) 반경 ${a.rad} 도착 턴 ${a.arrive} 소화확률 ${a.p}`}));
+  R.push({구분:'식생 조건',항목:'식생 유형 계수 (농경지/활엽/침엽)',설정값:`${S.P.veg.F} / ${S.P.veg.B} / ${S.P.veg.P}`});
+  R.push({구분:'식생 조건',항목:`연료 건조도 (${S.dry.index} 올해/평년/편차)`,설정값:`${S.dry.now} / ${S.dry.normal} / ${dryAnom()} → ${dryGrade()} ×${S.P.dryMul[dryGrade()]}`});
+  R.push({구분:'식생 조건',항목:'건조도 계수 (건조/보통/습윤) · 보통 범위',설정값:`${S.P.dryMul.건조} / ${S.P.dryMul.보통} / ${S.P.dryMul.습윤} · ±${S.dry.band}`});
+  R.push({구분:'식생 조건',항목:'경사 효과',설정값:S.P.slopeOn?`사용, 오르막 100m당 ${S.P.slopeK}`:'사용 안 함'});
+  R.push({구분:'확률 규칙',항목:'기본확산확률(6차시)',설정값:`낮음 ${S.P.base.낮음} / 보통 ${S.P.base.보통} / 높음 ${S.P.base.높음}`});
+  R.push({구분:'확률 규칙',항목:'변환배율',설정값:S.P.scale});
+  R.push({구분:'확률 규칙',항목:'바람가중치 / 집중도',설정값:`약 ${S.P.windW.약} / 중 ${S.P.windW.중} / 강 ${S.P.windW.강} / 집중도 ${S.P.focus}`});
+  R.push({구분:'확률 규칙',항목:'습도 보정',설정값:`건조 ${S.P.hum.건조} / 보통 ${S.P.hum.보통} / 습윤 ${S.P.hum.습윤}`});
+  R.push({구분:'확률 규칙',항목:'풍속별 확산 단계 수 / 연소 지속 턴',설정값:`약 1 / 중 2 / 강 3 / ${S.P.burnTurns}턴`});
+  R.push({구분:'사건 변수',항목:'강수 보정 / 강수 소화확률',설정값:`×${S.P.rainMul} / ${S.P.rainOut}`});
+  R.push({구분:'사건 변수',항목:'비화 사용 / 비화 확률',설정값:`${S.P.spot?'사용':'끔'} / ${S.P.spotP}`});
+  R.push({구분:'사건 변수',항목:'강풍 시 헬기 중단',설정값:S.P.heliStop?'예':'아니오'});
+  R.push({구분:'시간 변화',항목:'등급 경계',설정값:`풍속 ${S.th.w1}/${S.th.w2}km/h, 습도 ${S.th.h1}/${S.th.h2}%, 위험 ${S.th.r1}/${S.th.r2}일, 강수 ${S.th.rainMM}mm, 흔들림 ${S.th.jitter}`});
+  return R; }
+
+// ===== 실행 =====
+function eastTurn(log){ const x=log.find(l=>l.최동단열!==null&&l.최동단열>=37); return x?x.턴:null; }
+function runSim(){ stopPlay(); rebuild();
+  sim=simulate(mapStr(),sched,S.ign,S.ignTurn,S.res,PP(),S.fbTurn,S.runSeed,true); curTurn=0; $('#stale').hidden=true;
+  const L=sim.log[27], et=eastTurn(sim.log);
+  history.push({실행번호:S.runNo,seed:S.runSeed,변환배율:S.P.scale,바람집중도:S.P.focus,비화:S.P.spot?'켬':'끔',비화확률:S.P.spotP,
+    습도보정:`${S.P.hum.건조}/${S.P.hum.보통}/${S.P.hum.습윤}`,식생계수:`${S.P.veg.F}/${S.P.veg.B}/${S.P.veg.P}`,연료건조도:`${dryGrade()} ×${S.P.dryMul[dryGrade()]}`,경사:S.P.slopeOn?S.P.slopeK:'끔',피해면적_ha:L.피해면적_ha,동해안도달:et===null?'도달 못함':'턴 '+et,마을피해:L.마을피해,진화칸:L.진화누적,비용:mapCost(S.map,S.res)});
+  persist(); renderLog(); renderHistory(); renderCheck(); drawTimeline(); syncScrub(); drawMap(); play(); }
+function play(){ stopPlay(); if(!sim) return; $('#playBtn').textContent='일시정지'; if(curTurn>=27) curTurn=0;
+  playing=setInterval(()=>{ curTurn++; if(curTurn>=27){ curTurn=27; stopPlay(); } drawMap(); drawTimeline(); syncScrub(); highlightLog(); }, +$('#speed').value); }
+function stopPlay(){ if(playing){ clearInterval(playing); playing=null; } const b=$('#playBtn'); if(b) b.textContent='재생'; }
+function syncScrub(){ $('#scrub').value=curTurn; $('#scrubOut').textContent='턴 '+curTurn; }
+const LOGCOLS=['턴','날짜','시간대','풍향','풍속','습도','위험등급','사건','헬기','연소중','소실누적','진화누적','방화선버팀','마을피해','피해면적_ha','확산방향'];
+function renderLog(){ const t=$('#log'); if(!sim){ t.innerHTML='<caption>아직 실행하지 않았어요. 위의 “시뮬레이션 실행”을 누르세요.</caption>'; drawChart(); return; }
+  t.innerHTML='<thead><tr>'+LOGCOLS.map(c=>`<th>${c.replace('_ha','(ha)')}</th>`).join('')+'</tr></thead><tbody>'+
+   sim.log.map(l=>'<tr data-t="'+l.턴+'">'+LOGCOLS.map(c=>`<td>${c==='피해면적_ha'?l[c].toLocaleString():l[c]}</td>`).join('')+'</tr>').join('')+'</tbody>';
+  t.querySelectorAll('tbody tr').forEach(tr=>tr.onclick=()=>{ curTurn=+tr.dataset.t; stopPlay(); drawMap(); drawTimeline(); syncScrub(); highlightLog(); });
+  highlightLog(); drawChart(); }
+function highlightLog(){ $$('#log tbody tr').forEach(tr=>tr.classList.toggle('cur',+tr.dataset.t===curTurn)); drawChart(); }
+function drawChart(){ const c=$('#chart'), g=c.getContext('2d'); const W=c.clientWidth||600, H=180, dpr=window.devicePixelRatio||1;
+  c.width=W*dpr; c.height=H*dpr; g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,W,H);
+  const css=getComputedStyle(document.documentElement); const ink=css.getPropertyValue('--muted').trim();
+  g.font='11px "IBM Plex Sans KR", sans-serif'; g.fillStyle=ink;
+  if(!sim){ g.fillText('실행하면 턴별 연소·소실·진화 칸 수가 그려져요.',10,H/2); return; }
+  const series=[['연소중',STATEC[1]],['소실누적',css.getPropertyValue('--ink').trim()],['진화누적',STATEC[3]]];
+  const mx=Math.max(10,...sim.log.map(l=>Math.max(l.연소중,l.소실누적,l.진화누적))); const L=34,R=10,T=10,B=22; const X=t=>L+t*(W-L-R)/27, Y=v=>T+(H-T-B)*(1-v/mx);
+  g.strokeStyle=css.getPropertyValue('--line').trim(); g.lineWidth=1;
+  for(let d=0;d<7;d++){ const x=X(d*4); g.beginPath(); g.moveTo(x,T); g.lineTo(x,H-B); g.stroke(); g.fillText('3/'+(22+d),x+2,H-6); }
+  g.fillText(mx,2,T+8); g.fillText('0',20,H-B);
+  g.fillStyle='rgba(240,82,28,.12)'; g.fillRect(X(curTurn)-3,T,6,H-T-B);
+  series.forEach(([k,col],i)=>{ g.strokeStyle=col; g.lineWidth=2; g.beginPath(); sim.log.forEach((l,t)=>{ t?g.lineTo(X(t),Y(l[k])):g.moveTo(X(t),Y(l[k])); }); g.stroke();
+    g.fillStyle=col; g.fillRect(L+8+i*70,T,10,10); g.fillStyle=ink; g.fillText(k.replace('누적',''),L+22+i*70,T+9); }); }
+function renderHistory(){ const t=$('#hist'); if(!history.length){ t.innerHTML='<caption>실행할 때마다 한 줄씩 쌓여요. 보완 전후를 비교하는 데 쓰세요.</caption>'; return; }
+  const ks=Object.keys(history[0]); t.innerHTML='<thead><tr>'+ks.map(k=>`<th>${k}</th>`).join('')+'</tr></thead><tbody>'+history.map(h=>'<tr>'+ks.map(k=>`<td>${typeof h[k]==='number'?h[k].toLocaleString():h[k]}</td>`).join('')+'</tr>').join('')+'</tbody>'; }
+
+// ===== 점검 =====
+function renderCheck(){ const t=$('#check'); if(!sim){ t.innerHTML='<caption>실행 후 실제 의성 산불과 비교표가 나타나요.</caption>'; $('#vegCheck').innerHTML='<caption>실행 후 식생 유형별로 얼마나 탔는지 나타나요.</caption>'; return; }
+  const L=sim.log[27], et=eastTurn(sim.log);
+  const rows=[['동해안(동쪽 끝) 도달','3/25 (턴 12~15)', et===null?'도달 못함':`턴 ${et} (3/${sim.log[et].날짜.slice(3)} ${sim.log[et].시간대})`],
+   ['총 피해면적','약 99,000ha (≈ 250칸)',`${L.피해면적_ha.toLocaleString()}ha (${L.피해면적_ha/400}칸)`],
+   ['마을 피해','여러 마을 피해',`${L.마을피해}칸`],['3/28 이후','주불 진화', L.연소중===0?'진화됨':`${L.연소중}칸 아직 연소 중`]];
+  t.innerHTML='<thead><tr><th>비교 항목</th><th>실제 의성 산불</th><th>우리 디지털 트윈</th></tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map((x,i)=>i?`<td>${x}</td>`:`<th>${x}</th>`).join('')+'</tr>').join('')+'</tbody>';
+  const fr=sim.frames[27], tot={}, dmg={}; let T=0,Dm=0;
+  for(let r=0;r<40;r++)for(let c=0;c<40;c++){ let ch=S.map[r][c]; if(ch==='b') ch='B'; if(!'FBP'.includes(ch)) continue; tot[ch]=(tot[ch]||0)+1; T++; const s=fr[r*40+c]; if(s===1||s===2){ dmg[ch]=(dmg[ch]||0)+1; Dm++; } }
+  $('#vegCheck').innerHTML='<thead><tr><th>식생 유형</th><th>지도 전체에서 차지하는 비율</th><th>피해 칸에서 차지하는 비율</th><th>해석</th></tr></thead><tbody>'+
+   [['P','침엽수림'],['B','활엽수림'],['F','농경지·초지']].map(([ch,n])=>{ const a=(tot[ch]||0)/T*100, b=Dm?(dmg[ch]||0)/Dm*100:0; const d=b-a;
+    return `<tr><th>${n}</th><td>${a.toFixed(0)}%</td><td>${b.toFixed(0)}%</td><td>${Dm?(Math.abs(d)<3?'비율만큼 탔다':(d>0?'<b class="g-강">비율보다 더 많이 탔다</b>':'비율보다 덜 탔다')):'-'}</td></tr>`; }).join('')+'</tbody>'; }
+async function repeatRuns(){ const btn=$('#repBtn'); btn.disabled=true; rebuild(); const n=+$('#repN').value; const out=[];
+  for(let s=0;s<n;s++){ const {log}=simulate(mapStr(),sched,S.ign,S.ignTurn,S.res,PP(),S.fbTurn,s,false); out.push({seed:s,피해면적_ha:log[27].피해면적_ha,동해안도달턴:eastTurn(log),마을피해:log[27].마을피해});
+    if(s%5===4){ btn.textContent=`실행 중 ${s+1}/${n}`; await new Promise(r=>setTimeout(r)); } }
+  btn.disabled=false; btn.textContent='반복 실행';
+  const areas=out.map(o=>o.피해면적_ha).sort((a,b)=>a-b), med=areas[Math.floor(n/2)], reach=out.filter(o=>o.동해안도달턴!==null).length;
+  $('#repSum').innerHTML=`동해안 도달 <b>${reach}/${n}회 (${Math.round(reach/n*100)}%)</b> · 피해면적 중앙값 <b>${med.toLocaleString()}ha</b> · 최소 ${areas[0].toLocaleString()} ~ 최대 ${areas[n-1].toLocaleString()}ha`;
+  drawHist(out.map(o=>o.피해면적_ha)); }
+function drawHist(vals){ const c=$('#histo'), g=c.getContext('2d'); const W=c.clientWidth||600,H=170,dpr=window.devicePixelRatio||1; c.width=W*dpr;c.height=H*dpr;g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,W,H);
+  const css=getComputedStyle(document.documentElement); const mx=Math.max(REAL_HA*1.5,...vals), bins=12, cnt=Array(bins).fill(0);
+  vals.forEach(v=>cnt[Math.min(bins-1,Math.floor(v/mx*bins))]++); const top=Math.max(...cnt), L=10,B=22,bw=(W-2*L)/bins;
+  cnt.forEach((k,i)=>{ const h=(H-B-14)*k/top; g.fillStyle='#E88A5E'; g.fillRect(L+i*bw+1,H-B-h,bw-2,h); if(k){g.fillStyle=css.getPropertyValue('--ink').trim(); g.font='11px sans-serif'; g.fillText(k,L+i*bw+bw/2-3,H-B-h-3);} });
+  const xr=L+REAL_HA/mx*(W-2*L); g.strokeStyle=css.getPropertyValue('--ink').trim(); g.setLineDash([5,4]); g.beginPath(); g.moveTo(xr,4); g.lineTo(xr,H-B); g.stroke(); g.setLineDash([]);
+  g.fillStyle=css.getPropertyValue('--muted').trim(); g.font='11px "IBM Plex Sans KR", sans-serif'; g.fillText('실제 약 99,000ha',xr+4,14); g.fillText('0',L,H-6); g.fillText(Math.round(mx).toLocaleString()+'ha',W-80,H-6); }
+
+// ===== 정책 비교 =====
+function vline(m,col,r0,r1){ const g=m.map(r=>r.slice()); for(let r=r0;r<=r1;r++) if('FBP'.includes(g[r][col])) g[r][col]='X'; return g; }
+function convert(m,r0,r1,c0,c1){ const g=m.map(r=>r.slice()); for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++) if(g[r][c]==='P') g[r][c]='b'; return g; }
+function guard(m,names){ const g=m.map(r=>r.slice()); const cells=[];
+  for(const n of names){ const st=[VILLAGES[n]], seen=new Set(); while(st.length){ const [r,c]=st.pop(), k=r*40+c; if(seen.has(k)||r<0||r>=40||c<0||c>=40||g[r][c]!=='V') continue; seen.add(k); cells.push([r,c]); st.push([r+1,c],[r-1,c],[r,c+1],[r,c-1]); } }
+  for(const [r,c] of cells) for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){ const rr=r+dr,cc=c+dc; if(rr>=0&&rr<40&&cc>=0&&cc<40&&'FBP'.includes(g[rr][cc])) g[rr][cc]='X'; } return g; }
+function scenarios(){ const B=MAP_BASE.map(r=>r.split(''));
+  const H=(n,r,c,t)=>({name:n,kind:'헬기',r,c,rad:3,arrive:t,p:0.4}), G=(n,r,c,t)=>({name:n,kind:'지상',r,c,rad:2,arrive:t,p:0.3});
+  return [
+   {id:'0',name:'무대응',desc:'대책 없음 (비교 기준)',map:B,res:[],fb:99},
+   {id:'A',name:'방화선 우선',desc:'하천 동쪽 남북 방화선, 3/24 0시 완성',map:vline(B,22,2,37),res:[],fb:8},
+   {id:'B',name:'진화자원 집중',desc:'헬기 2대 + 지상 1팀, 3/23 투입',map:B,res:[H('헬기1',21,10,5),H('헬기2',19,15,6),G('지상1',21,8,5)],fb:99},
+   {id:'C',name:'사전 수종전환',desc:'하천 동쪽 침엽수 띠를 활엽수로',map:convert(B,6,34,22,24),res:[],fb:99},
+   {id:'D',name:'마을 보호',desc:'안동·청송 둘레 방화선 + 청송 지상 1팀',map:guard(B,['안동','청송']),res:[G('지상1',26,28,6)],fb:6},
+   {id:'E',name:'우리 모둠 정책',desc:'지금 편집한 지도·진화 자원·방화선 완성 턴',map:S.map.map(r=>r.slice()),res:JSON.parse(JSON.stringify(S.res)),fb:S.fbTurn}]; }
+let policyOut=null;
+async function runPolicy(){ const btn=$('#polBtn'); btn.disabled=true; rebuild(); const n=+$('#polN').value; const sc=scenarios(); const rows=[];
+  for(const s of sc){ const m=s.map.map(r=>r.join('')), cost=mapCost(s.map,s.res);
+    for(let seed=0;seed<n;seed++){ const {log}=simulate(m,sched,S.ign,S.ignTurn,s.res,PP(),s.fb,seed,false);
+      rows.push({시나리오:s.id+'. '+s.name,seed,비용:cost,피해면적_ha:log[27].피해면적_ha,마을피해:log[27].마을피해,동해안도달:eastTurn(log)!==null?1:0}); }
+    btn.textContent=`${s.id} 완료…`; await new Promise(r=>setTimeout(r)); }
+  btn.disabled=false; btn.textContent='정책 비교 실행'; policyOut=rows; renderPolicy(sc,n); }
+const q=(a,p)=>{ const s=a.slice().sort((x,y)=>x-y); return s[Math.min(s.length-1,Math.floor(p*(s.length-1)+0.5))]; };
+function renderPolicy(sc,n){ const by={}; policyOut.forEach(r=>(by[r.시나리오]=by[r.시나리오]||[]).push(r));
+  const base=q(by['0. 무대응'].map(r=>r.피해면적_ha),0.5);
+  const sum=Object.entries(by).map(([k,rs])=>{ const a=rs.map(r=>r.피해면적_ha), med=q(a,0.5), cost=rs[0].비용;
+    return {시나리오:k,비용:cost,피해면적_중앙값_ha:med,하위25:q(a,0.25),상위75:q(a,0.75),피해감소율:Math.round((base-med)/base*1000)/10,
+     점당감소_ha:cost?Math.round((base-med)/cost):null,마을피해_평균:Math.round(rs.reduce((s,r)=>s+r.마을피해,0)/rs.length*10)/10,동해안도달률:Math.round(rs.reduce((s,r)=>s+r.동해안도달,0)/rs.length*100)}; });
+  policyOut.summary=sum;
+  const best=(k,dir)=>sum.filter(s=>s.시나리오[0]!=='0').reduce((a,b)=>(dir*b[k]>dir*a[k]?b:a));
+  $('#polTable').innerHTML='<thead><tr><th>시나리오</th><th>비용</th><th>피해면적 중앙값</th><th>감소율</th><th>1점당 감소</th><th>마을 피해 평균</th><th>동해안 도달률</th></tr></thead><tbody>'+
+   sum.map(s=>`<tr class="${s.비용>BUDGET?'over':''}"><th>${s.시나리오}</th><td>${s.비용}${s.비용>BUDGET?' ⚠':''}</td><td>${s.피해면적_중앙값_ha.toLocaleString()}ha</td><td>${s.피해감소율}%</td><td>${s.점당감소_ha===null?'-':s.점당감소_ha.toLocaleString()+'ha'}</td><td>${s.마을피해_평균}칸</td><td>${s.동해안도달률}%</td></tr>`).join('')+'</tbody>';
+  $('#polNote').innerHTML=`피해면적 기준 1위 <b>${best('피해감소율',1).시나리오}</b> · 마을 보호 기준 1위 <b>${best('마을피해_평균',-1).시나리오}</b> · 가성비 1위 <b>${best('점당감소_ha',1).시나리오}</b> <span class="muted">(시나리오당 ${n}회) · 차이가 10% 안팎이면 우연일 수 있으니 반복 횟수를 늘려 확인하세요.</span>`;
+  drawPolicy(sum); }
+function drawPolicy(sum){ const c=$('#polChart'), g=c.getContext('2d'); const W=c.clientWidth||600, rowH=34, H=sum.length*rowH+30, dpr=window.devicePixelRatio||1;
+  c.style.height=H+'px'; c.width=W*dpr; c.height=H*dpr; g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,W,H);
+  const css=getComputedStyle(document.documentElement), ink=css.getPropertyValue('--ink').trim(), mu=css.getPropertyValue('--muted').trim();
+  const mx=Math.max(REAL_HA*1.3,...sum.map(s=>s.상위75)), L=130, R=16, X=v=>L+(W-L-R)*v/mx;
+  g.font='12px "IBM Plex Sans KR", sans-serif';
+  sum.forEach((s,i)=>{ const y=16+i*rowH; g.fillStyle=ink; g.fillText(s.시나리오,4,y+12);
+    g.fillStyle='rgba(240,82,28,.25)'; g.fillRect(X(s.하위25),y+3,Math.max(2,X(s.상위75)-X(s.하위25)),14);
+    g.fillStyle='#F0521C'; g.fillRect(X(s.피해면적_중앙값_ha)-1.5,y,3,20); });
+  const xr=X(REAL_HA); g.strokeStyle=mu; g.setLineDash([5,4]); g.beginPath(); g.moveTo(xr,6); g.lineTo(xr,H-18); g.stroke(); g.setLineDash([]);
+  g.fillStyle=mu; g.fillText('실제 약 99,000ha',xr+4,10); g.fillText('막대 = 가운데 50% 범위, 세로선 = 중앙값',4,H-4); }
+function renderScen(){ $('#scenList').innerHTML=scenarios().map(s=>{ const c=mapCost(s.map,s.res); return `<li><b>${s.id}. ${s.name}</b> <span class="cost ${c>BUDGET?'over':''}">${c}점</span><br><small>${s.desc}</small></li>`; }).join(''); }
+
+// ===== 탭 =====
+function showTab(id){ $$('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id)); $$('.panel').forEach(p=>p.hidden=p.id!==id);
+  if(id==='p6') renderScen(); if(id==='p4'){ drawChart(); } if(id==='pv') renderVeg(); }
+$$('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+
+// ===== 초기화 =====
+function init(){ rebuild(); renderDays(); renderVeg(); renderTH(); renderSched(); renderParams(); renderRes(); renderLog(); renderHistory(); renderCheck(); updateCost();
+  $('#ignTurn').value=S.ignTurn; $('#fbTurn').value=S.fbTurn; $('#runSeed').value=S.runSeed; $('#runNo').value=S.runNo;
+  sizeMap(); drawTimeline(); setTool('LOOK'); setView('terrain'); }
+$$('.tool').forEach(b=>b.onclick=()=>setTool(b.dataset.tool));
+$$('.view').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+
+$('#addRes').onclick=()=>{ if(S.res.length>=3) return; S.res.push({name:'헬기'+(S.res.length+1),kind:'헬기',r:20,c:20,rad:3,arrive:6,p:0.4}); selRes=S.res.length-1; setTool('RES'); renderRes(); invalidate(); updateCost(); };
+$('#ignTurn').onchange=e=>{ S.ignTurn=+e.target.value; invalidate(); }; $('#fbTurn').onchange=e=>{ S.fbTurn=+e.target.value; invalidate(); };
+$('#runSeed').onchange=e=>{ S.runSeed=+e.target.value; persist(); }; $('#runNo').onchange=e=>{ S.runNo=+e.target.value; persist(); };
+$('#resetMap').onclick=()=>{ S.map=MAP_BASE.map(r=>r.split('')); invalidate(); updateCost(); };
+$('#resetAll').onclick=()=>{ if(!confirm('모든 설정과 실행 기록을 처음 상태로 되돌릴까요?')) return; S=defaults(); history=[]; sim=null; persist(); init(); $('#stale').hidden=true; };
+$('#runBtn').onclick=runSim; $('#runBtn2').onclick=runSim; $('#playBtn').onclick=()=>playing?stopPlay():play();
+$('#prevBtn').onclick=()=>{ stopPlay(); curTurn=Math.max(0,curTurn-1); drawMap(); drawTimeline(); syncScrub(); highlightLog(); };
+$('#nextBtn').onclick=()=>{ stopPlay(); curTurn=Math.min(27,curTurn+1); drawMap(); drawTimeline(); syncScrub(); highlightLog(); };
+$('#scrub').oninput=e=>{ stopPlay(); curTurn=+e.target.value; drawMap(); drawTimeline(); syncScrub(); highlightLog(); };
+$('#repBtn').onclick=repeatRuns; $('#polBtn').onclick=runPolicy;
+$('#dlSched').onclick=()=>saveFile('산출물2_시간변화변수표.csv',toCSV(schedRows()));
+$('#dlSet').onclick=()=>saveFile('산출물1_디지털트윈_설정표.csv',toCSV(settingRows()));
+$('#dlLog').onclick=()=>{ if(!sim){ toast('먼저 시뮬레이션을 실행하세요.'); return; } saveFile(`산출물3_실행로그_${S.runNo}차.csv`,toCSV(sim.log)); };
+$('#dlHist').onclick=()=>{ if(!history.length){ toast('아직 실행 기록이 없어요.'); return; } saveFile('보완기록_실행비교.csv',toCSV(history)); };
+$('#clrHist').onclick=()=>{ if(confirm('실행 비교 기록을 지울까요?')){ history=[]; persist(); renderHistory(); } };
+$('#dlPol').onclick=()=>{ if(!policyOut){ toast('먼저 정책 비교를 실행하세요.'); return; } saveFile('정책비교_요약표.csv',toCSV(policyOut.summary)); };
+window.addEventListener('resize',()=>{ sizeMap(); drawChart(); });
+init();
+</script></body></html>
